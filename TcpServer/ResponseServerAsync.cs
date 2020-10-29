@@ -77,7 +77,7 @@ namespace TcpServer
                 {
                     var result = _transformer(input).ToString();
 
-                    db.AddRecord($"{input}: {result}");
+                    db.AddRecord($"{input} = {result}");
 
                     Send(stream, result + "\n\r");
 
@@ -101,16 +101,6 @@ namespace TcpServer
         private void Send(NetworkStream stream, string message)
         {
             stream.Write(_encoding.GetBytes(message), 0, message.Length);
-        }
-
-        private string ReadAndClearBuffer(NetworkStream stream)
-        {
-            var chars = stream.Read(_buffer, 0, _buffer.Length);
-            var message = _encoding.GetString(_buffer);
-            message = message.Substring(0, chars);
-            stream.Flush();
-
-            return message;
         }
     }
 }
