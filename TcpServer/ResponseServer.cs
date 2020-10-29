@@ -9,12 +9,15 @@ namespace TcpServer
 	/// Class that listens for TCP connections and sends processed response back to client
 	/// </summary>
 	/// <typeparam name="TResponse">Type of response that callback returns</typeparam>
-	public class ResponseServer<TResponse>
+	public abstract class ResponseServer<TResponse>
 	{
-		private readonly IResponseTransformer<TResponse> _transformer;
-		private readonly TcpListener _server;
-		private readonly Encoding _encoding;
-		private readonly Action<string> _logger;
+		protected readonly IResponseTransformer<TResponse> _transformer;
+		protected readonly TcpListener _server;
+		protected readonly Encoding _encoding;
+		protected readonly Action<string> _logger;
+		protected readonly IPAddress _iPAddress;
+		protected readonly int _port;
+		protected readonly byte[] _buffer = new byte[1024];
 
 		/// <summary>
 		/// Basic constructor of ResponseServer class
@@ -26,6 +29,8 @@ namespace TcpServer
 		/// <param name="responseEncoding">Encoding that server will use during reading and writing</param>
 		public ResponseServer(IPAddress localAddress, int port, IResponseTransformer<TResponse> transformer, Encoding responseEncoding, Action<string> logger = null)
 		{
+			_iPAddress = localAddress;
+			_port = port;
 			_logger = logger ?? Console.WriteLine;
 			_transformer = transformer;
 			_server = new TcpListener(localAddress, port);
@@ -37,37 +42,10 @@ namespace TcpServer
 		/// After receiving message uses encoding to parse it to string and pass it as input
 		/// to callback function. Result of callback is sent back to client
 		/// </summary>
-		/// <param name="bufferSize">Size of the message buffer. Defaults to 1024</param>
-		public void Start(int bufferSize = 1024)
-		{
+		public virtual void Start()
+        {
+			_logger($"Listening on {_iPAddress}:{_port}");
 			_server.Start();
-			_logger($"Listening on: {_server.LocalEndpoint}");
-			while (true)
-			{
-				var client = _server.AcceptTcpClient();
-				var stream = client.GetStream();
-
-				var buffer = new byte[bufferSize];
-				stream.Read(buffer, 0, bufferSize);
-
-				var deserializedRequest = _encoding.GetString(buffer, 0, buffer.Length);
-				_logger($"Request: {deserializedRequest}");
-
-				string response;
-				try
-				{
-					var result = _transformer(deserializedRequest);
-					response = result.ToString();
-				}
-				catch (Exception e)
-				{
-					response = $"Error: {e.Message}";
-				}
-
-				_logger($"Response: {response}");
-				var serializedResponse = _encoding.GetBytes(response);
-				stream.Write(serializedResponse, 0, serializedResponse.Length);
-			}
-		}
+        }
 	}
 }

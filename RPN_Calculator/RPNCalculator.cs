@@ -32,7 +32,7 @@ public static class RPNCalculator
 		}
 		catch (Exception)
 		{
-			throw new ArgumentException(InvalidInputMessage);
+			throw new ArgumentException($"{InvalidInputMessage}. Input: {input}");
 		}
 	}
 
