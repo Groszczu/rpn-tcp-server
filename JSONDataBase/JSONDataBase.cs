@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using JSONDataBase;
 
-namespace RPN_TcpServerAsync.JSONDataBase
+namespace JSONDataBase
 {
-    public class JSONDataBase : Core.IHistoryDataBase
+    public class JSONDataBase : IHistoryDataBase
     {
         private const string Path = "historyDataBase.json";
         private readonly string _key;
