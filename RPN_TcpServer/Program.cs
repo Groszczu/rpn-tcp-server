@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using RPN_Calculator;
 using TcpServer;
 
-namespace TcpServer
+namespace RPN_TcpServer
 {
     class Program
     {

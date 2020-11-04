@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using JSONDataBase;
 
 namespace TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private HashSet<string> _connectedUsers = new HashSet<string>();
+        private readonly HashSet<string> _connectedUsers = new HashSet<string>();
 
         public ResponseServerAsync(IPAddress localAddress, int port, IResponseTransformer<double> transformer, Encoding responseEncoding)
             : base(localAddress, port, transformer, responseEncoding)
@@ -51,7 +48,7 @@ namespace TcpServer
             }
             _connectedUsers.Add(username);
 
-            var db = JsonDataBase.Create(username);
+            //var db = JSONDataBase.JSONDataBase.Create(username);
 
             Send(stream, "Connected to database\n\r");
 
@@ -62,13 +59,14 @@ namespace TcpServer
 
                 if (input == "history")
                 {
-                    foreach (var record in db.GetHistory())
-                    {
-                        Send(stream, record + "\n\r");
-                    }
-                    continue;
+                    //foreach (var record in db.GetHistory())
+                    //{
+                    //    Send(stream, record + "\n\r");
+                    //}
+                    //continue;
                 }
-                else if (input == "exit")
+
+                if (input == "exit")
                 {
                     break;
                 }
@@ -77,7 +75,7 @@ namespace TcpServer
                 {
                     var result = _transformer(input).ToString();
 
-                    db.AddRecord($"{input} = {result}");
+                    //db.AddRecord($"{input} = {result}");
 
                     Send(stream, result + "\n\r");
 
@@ -87,7 +85,7 @@ namespace TcpServer
                     Send(stream, e.Message);
                 }
             }
-            db.SaveChanges();
+            //db.SaveChanges();
             streamReader.Close();
             stream.Close();
             _connectedUsers.Remove(username);
