@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using RPN_Database;
+using RPN_Database.Model;
 
 namespace TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
         private readonly HashSet<string> _connectedUsers = new HashSet<string>();
+        private readonly RPNContext _context;
 
-        public ResponseServerAsync(IPAddress localAddress, int port, IResponseTransformer<double> transformer, Encoding responseEncoding)
+        public ResponseServerAsync(IPAddress localAddress, int port, IResponseTransformer<double> transformer, Encoding responseEncoding, RPNContext context)
             : base(localAddress, port, transformer, responseEncoding)
         {
-
+            _context = context;
         }
 
         public override void Start()
@@ -48,8 +53,6 @@ namespace TcpServer
             }
             _connectedUsers.Add(username);
 
-            //var db = JSONDataBase.JSONDataBase.Create(username);
-
             Send(stream, "Connected to database\n\r");
 
             while (true)
@@ -59,11 +62,10 @@ namespace TcpServer
 
                 if (input == "history")
                 {
-                    //foreach (var record in db.GetHistory())
-                    //{
-                    //    Send(stream, record + "\n\r");
-                    //}
-                    //continue;
+                    foreach (var result in _context.History.ToList())
+                    {
+                        Send(stream, result + "\n\r");
+                    }
                 }
 
                 if (input == "exit")
@@ -75,7 +77,14 @@ namespace TcpServer
                 {
                     var result = _transformer(input).ToString();
 
-                    //db.AddRecord($"{input} = {result}");
+                    _context.History.Add(new History
+                    {
+                        Id = 1,
+                        Expression = input,
+                        Result = result
+                    });
+
+                    _context.SaveChanges();
 
                     Send(stream, result + "\n\r");
 
@@ -85,7 +94,7 @@ namespace TcpServer
                     Send(stream, e.Message);
                 }
             }
-            //db.SaveChanges();
+
             streamReader.Close();
             stream.Close();
             _connectedUsers.Remove(username);
