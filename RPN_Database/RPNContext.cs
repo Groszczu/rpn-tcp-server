@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using RPN_Database.Model;
 
 namespace RPN_Database
@@ -11,5 +10,6 @@ namespace RPN_Database
         }
 
         public DbSet<History> History { get; set; }
+
     }
 }

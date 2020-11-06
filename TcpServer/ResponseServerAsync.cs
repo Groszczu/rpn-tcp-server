@@ -53,8 +53,6 @@ namespace TcpServer
             }
             _connectedUsers.Add(username);
 
-            Send(stream, "Connected to database\n\r");
-
             while (true)
             {
                 Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
@@ -62,36 +60,38 @@ namespace TcpServer
 
                 if (input == "history")
                 {
-                    foreach (var result in _context.History.ToList())
+                    _context.History.ToList().ForEach(h =>
                     {
-                        Send(stream, result + "\n\r");
-                    }
+                        _logger(h.ToString());
+                        Send(stream, h + "\n\r");
+                    });
                 }
-
-                if (input == "exit")
+                else if (input == "exit")
                 {
                     break;
                 }
-
-                try
+                else
                 {
-                    var result = _transformer(input).ToString();
 
-                    _context.History.Add(new History
+                    try
                     {
-                        Id = 1,
-                        Expression = input,
-                        Result = result
-                    });
+                        var result = _transformer(input).ToString();
 
-                    _context.SaveChanges();
+                        _context.History.Add(new History
+                        {
+                            Expression = input,
+                            Result = result
+                        });
 
-                    Send(stream, result + "\n\r");
+                        _context.SaveChanges();
 
-                }
-                catch (Exception e)
-                {
-                    Send(stream, e.Message);
+                        Send(stream, result + "\n\r");
+
+                    }
+                    catch (ArgumentException e)
+                    {
+                        Send(stream, e.Message);
+                    }
                 }
             }
 
