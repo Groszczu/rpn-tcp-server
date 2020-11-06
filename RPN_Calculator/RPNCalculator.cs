@@ -9,12 +9,16 @@ namespace RPN_Calculator
     /// </summary>
     public static class RPNCalculator
     {
-        private static readonly Dictionary<char, Func<double, double, double>> _signToOperation = new Dictionary<char, Func<double, double, double>>()
+        private static readonly Dictionary<string, Func<double, double, double>> _signToOperation = new Dictionary<string, Func<double, double, double>>()
         {
-            { '-', (a, b) => a - b },
-            { '+', (a, b) => a + b },
-            { '*', (a, b) => a * b },
-            { '/', (a, b) => a / b },
+            { "-", (a, b) => a - b },
+            { "+", (a, b) => a + b },
+            { "*", (a, b) => a * b },
+            { "/", (a, b) => a / b },
+            { "^", (a, b) => (double)Math.Pow(a, b) },
+            { "root", (a, b) => (double)Math.Pow(b, 1.0 / a)
+    },
+
         };
 
         private const string InvalidInputMessage = "Input is not a valid RPN";
@@ -49,7 +53,7 @@ namespace RPN_Calculator
                 }
                 else
                 {
-                    var func = _signToOperation[n[0]];
+                    var func = _signToOperation[n];
 
                     var arg2 = valuesStack.Pop();
                     var arg1 = valuesStack.Pop();
