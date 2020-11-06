@@ -6,7 +6,7 @@ namespace RPN_Database
 {
     public class RPNContext : DbContext
     {
-        public RPNContext(string connectionString) : base(connectionString)
+        public RPNContext() : base("name=RPNContext")
         {
         }
 
