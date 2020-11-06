@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using RPN_Calculator;
+using RPN_Database;
 using TcpServer;
 
 namespace RPN_TcpServer
@@ -21,7 +22,7 @@ namespace RPN_TcpServer
             }
 
             Console.WriteLine(ipAddress.ToString());
-            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII);
+            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, new RPNContext());
 
             rpnServer.Start();
         }
