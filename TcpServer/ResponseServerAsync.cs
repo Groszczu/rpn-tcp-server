@@ -62,7 +62,6 @@ namespace TcpServer
                 {
                     _context.History.ToList().ForEach(h =>
                     {
-                        _logger(h.ToString());
                         Send(stream, h + "\n\r");
                     });
                 }
@@ -72,7 +71,6 @@ namespace TcpServer
                 }
                 else
                 {
-
                     try
                     {
                         var result = _transformer(input).ToString();
@@ -86,7 +84,6 @@ namespace TcpServer
                         _context.SaveChanges();
 
                         Send(stream, result + "\n\r");
-
                     }
                     catch (ArgumentException e)
                     {
@@ -97,6 +94,7 @@ namespace TcpServer
 
             streamReader.Close();
             stream.Close();
+
             _connectedUsers.Remove(username);
         }
 
