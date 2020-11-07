@@ -40,8 +40,10 @@ namespace TcpServer
         {
             var stream = client.GetStream();
             Send(stream, "You are connected\n\rPlease enter user name\n\r");
-
             var streamReader = new StreamReader(stream);
+
+            var dataBase = new RPNData();
+            dataBase.ContextBuilder();
 
             var username = streamReader.ReadLine();
             if (_connectedUsers.Contains(username))
