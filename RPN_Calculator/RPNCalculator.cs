@@ -45,7 +45,8 @@ namespace RPN_Calculator
         private static double GetResult(string input)
         {
             var valuesStack = new Stack<double>();
-            Array.ForEach(input.Split(' '), n =>
+          
+            Array.ForEach(input?.Split(' '), n =>
             {
                 if (double.TryParse(n, out var num))
                 {

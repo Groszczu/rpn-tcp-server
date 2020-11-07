@@ -22,7 +22,7 @@ namespace RPN_TcpServer
             }
 
             Console.WriteLine(ipAddress.ToString());
-            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, new RPNContext());
+            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.Build,  new RPNContext());
 
             rpnServer.Start();
         }

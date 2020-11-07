@@ -7,22 +7,10 @@ using System.Text;
 
 namespace RPN_Database
 {
-    public class RPNData
+    public static class ContextBuilder
     {
-        #region Fields
-        SQLiteConnection connect;
-
-
-        #endregion
-
         #region Methods
-        public void setConn(SQLiteConnection con)
-        {
-            connect = con;
-            connect.Open();
-        }
-
-        public void ContextBuilder()
+        public static void Build()
         {
             string workingDirectory = Environment.CurrentDirectory;
             if (File.Exists(workingDirectory + "\\rpn.sqlite"))
@@ -31,29 +19,26 @@ namespace RPN_Database
             }
             else
             {
+                SQLiteConnection connect = new SQLiteConnection("Data Source=" + workingDirectory + "\\rpn.sqlite");
+                connect.Open();
                 Console.WriteLine("Database does not exist! Creating database...");
-                setConn(new SQLiteConnection("Data Source=" + workingDirectory + "\\rpn.sqlite"));
-                CreateDatabase();
-            }
-        }
 
-        public void CreateDatabase()
-        {
-            var cmd = connect.CreateCommand();
+                var cmd = connect.CreateCommand();
 
-            cmd.CommandText =
-                            @"CREATE TABLE Users ( Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                cmd.CommandText =
+                                @"CREATE TABLE Users ( Id INTEGER PRIMARY KEY AUTOINCREMENT, 
                             Username VARCHAR(64) NOT NULL UNIQUE, 
                             Password VARCHAR(64) NOT NULL,
                             Created DATE NOT NULL);";
-            cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
 
-            cmd.CommandText =
-                            @"CREATE TABLE Histories ( Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cmd.CommandText =
+                                @"CREATE TABLE Histories ( Id INTEGER PRIMARY KEY AUTOINCREMENT,
                             Expression TEXT NOT NULL,
                             Result TEXT NOT NULL,
                             Executed DATE NOT NULL);";
-            cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();
+            }
         }
         #endregion
     }

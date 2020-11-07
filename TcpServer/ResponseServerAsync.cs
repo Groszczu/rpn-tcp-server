@@ -15,17 +15,19 @@ namespace TcpServer
     {
         private readonly HashSet<string> _connectedUsers = new HashSet<string>();
         private readonly RPNContext _context;
+        protected readonly CreateContext _contextCreator;
 
-        public ResponseServerAsync(IPAddress localAddress, int port, IResponseTransformer<double> transformer, Encoding responseEncoding, RPNContext context)
+        public ResponseServerAsync(IPAddress localAddress, int port, ResponseTransformer<double> transformer, Encoding responseEncoding, CreateContext creator, RPNContext context)
             : base(localAddress, port, transformer, responseEncoding)
         {
+            _contextCreator = creator;
             _context = context;
         }
 
         public override void Start()
         {
             base.Start();
-
+            _contextCreator();
             while (true)
             {
                 var tcpClient = _server.AcceptTcpClient();
@@ -42,9 +44,6 @@ namespace TcpServer
             Send(stream, "You are connected\n\rPlease enter user name\n\r");
             var streamReader = new StreamReader(stream);
 
-            var dataBase = new RPNData();
-            dataBase.ContextBuilder();
-
             var username = streamReader.ReadLine();
             if (_connectedUsers.Contains(username))
             {
@@ -57,8 +56,18 @@ namespace TcpServer
 
             while (true)
             {
-                Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
-                var input = streamReader.ReadLine();
+                string input;
+                try
+                {
+                    Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
+                    input = streamReader.ReadLine();
+                }
+                catch (Exception e)
+                {
+                    streamReader.Close();
+                    stream.Close();
+                    return;
+                }
 
                 if (input == "history")
                 {
@@ -87,7 +96,7 @@ namespace TcpServer
 
                         Send(stream, result + "\n\r");
                     }
-                    catch (ArgumentException e)
+                    catch (Exception e)
                     {
                         Send(stream, e.Message);
                     }
