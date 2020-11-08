@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
 
@@ -24,30 +25,28 @@ namespace TcpServer
             _context = context;
         }
 
-        public override void Start()
+        public override async Task Start()
         {
-            base.Start();
+            await base.Start();
             _contextCreator();
             while (true)
             {
-                var tcpClient = _server.AcceptTcpClient();
+                var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
-                var transmissionDelegate = new Action<TcpClient>(ServeClient);
-                transmissionDelegate.BeginInvoke(tcpClient, TransmissionCallback, tcpClient);
+                var task = ServeClient(tcpClient).ContinueWith((result) => _logger("Client disconnected"));
             }
-
         }
 
-        private void ServeClient(TcpClient client)
+        private async Task ServeClient(TcpClient client)
         {
             var stream = client.GetStream();
-            Send(stream, "You are connected\n\rPlease enter user name\n\r");
+            await Send(stream, "You are connected\n\rPlease enter user name\n\r");
             var streamReader = new StreamReader(stream);
 
             var username = streamReader.ReadLine();
             if (_connectedUsers.Contains(username))
             {
-                Send(stream, "User already connected");
+                await Send(stream, "User already connected");
                 streamReader.Close();
                 stream.Close();
                 return;
@@ -59,10 +58,10 @@ namespace TcpServer
                 string input;
                 try
                 {
-                    Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
+                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
                     input = streamReader.ReadLine();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     streamReader.Close();
                     stream.Close();
@@ -94,11 +93,11 @@ namespace TcpServer
 
                         _context.SaveChanges();
 
-                        Send(stream, result + "\n\r");
+                        await Send(stream, result + "\n\r");
                     }
                     catch (Exception e)
                     {
-                        Send(stream, e.Message);
+                        await Send(stream, e.Message);
                     }
                 }
             }
@@ -109,14 +108,9 @@ namespace TcpServer
             _connectedUsers.Remove(username);
         }
 
-        private void TransmissionCallback(IAsyncResult _asyncResult)
+        private Task Send(NetworkStream stream, string message)
         {
-            _logger("Client disconnected");
-        }
-
-        private void Send(NetworkStream stream, string message)
-        {
-            stream.Write(_encoding.GetBytes(message), 0, message.Length);
+            return stream.WriteAsync(_encoding.GetBytes(message), 0, message.Length);
         }
     }
 }
