@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TcpServer
 {
@@ -42,7 +43,7 @@ namespace TcpServer
 		/// After receiving message uses encoding to parse it to string and pass it as input
 		/// to callback function. Result of callback is sent back to client
 		/// </summary>
-		public virtual void Start()
+		public virtual async Task Start()
         {
 			_logger($"Listening on {_iPAddress}:{_port}");
 			_server.Start();
