@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
 
-namespace TcpServer
+namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
