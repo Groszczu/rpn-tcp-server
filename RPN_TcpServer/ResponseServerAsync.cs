@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
 
+using static BCrypt.Net.BCrypt;
+
 namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private readonly HashSet<string> _connectedUsers = new HashSet<string>();
+        private readonly HashSet<User> _connectedUsers;
         private readonly RpnContext _context;
 
         public ResponseServerAsync(IPAddress localAddress,
@@ -23,6 +25,7 @@ namespace RPN_TcpServer
                                    Encoding responseEncoding,
                                    ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
         {
+            _connectedUsers = new HashSet<User>();
             _context = createContext();
         }
 
@@ -34,8 +37,8 @@ namespace RPN_TcpServer
             {
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
-                
-                ServeClient(tcpClient).ContinueWith((result) => _logger("Client disconnected"));
+
+                ServeClient(tcpClient).ContinueWith(result => _logger("Client disconnected"));
             }
         }
 
@@ -47,14 +50,36 @@ namespace RPN_TcpServer
             await Send(stream, "You are connected\n\rPlease enter user name\n\r");
             var username = streamReader.ReadLine();
 
+            await Send(stream, "Please enter password\n\r");
+            var password = streamReader.ReadLine();
 
-            if (_connectedUsers.Contains(username))
+            User user;
+
+            try
             {
-                await Send(stream, "User already connected");
+                user = _context.Users.First(u => u.Username == username);
+
+                if (_connectedUsers.Contains(user))
+                {
+                    await Send(stream, "User is already connected");
+                    CloseStreams(streamReader);
+                    return;
+                }
+                if (!EnhancedVerify(password, user.Password))
+                {
+                    await Send(stream, "Invalid password");
+                    CloseStreams(streamReader);
+                    return;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                await Send(stream, "User doesn't exist");
                 CloseStreams(streamReader);
                 return;
             }
-            _connectedUsers.Add(username);
+
+            _connectedUsers.Add(user);
 
             while (true)
             {
@@ -72,10 +97,14 @@ namespace RPN_TcpServer
 
                 if (input == "history")
                 {
-                    _context.History.ToList().ForEach(h =>
+                    if (user.Username == "admin")
                     {
-                        Send(stream, h + "\n\r");
-                    });
+                        await _context.History.ForEachAsync(async h => await Send(stream, $"{h}\n\r"));
+                    }
+                    else
+                    {
+                        await _context.History.Where(h => h.UserId == user.Id).ForEachAsync(async h => await Send(stream, $"{h}\n\r"));
+                    }
                 }
                 else if (input == "exit")
                 {
@@ -90,11 +119,12 @@ namespace RPN_TcpServer
                         _context.History.Add(new History
                         {
                             Expression = input,
-                            Result = result
+                            Result = result,
+                            User = user
                         });
 
                         await _context.SaveChangesAsync();
-                        await Send(stream, result + "\n\r");
+                        await Send(stream, $"{result}\n\r");
                     }
                     catch (Exception e)
                     {
@@ -104,7 +134,7 @@ namespace RPN_TcpServer
             }
 
             CloseStreams(streamReader);
-            _connectedUsers.Remove(username);
+            _connectedUsers.Remove(user);
         }
 
         private Task Send(NetworkStream stream, string message)

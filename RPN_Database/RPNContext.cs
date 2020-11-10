@@ -8,6 +8,7 @@ namespace RPN_Database
         public RpnContext() : base("name=RPNContext") { }
 
         public DbSet<History> History { get; set; }
+        public DbSet<User> Users { get; set; }
 
     }
 }
