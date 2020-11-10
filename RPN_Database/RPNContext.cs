@@ -3,11 +3,9 @@ using RPN_Database.Model;
 
 namespace RPN_Database
 {
-    public class RPNContext : DbContext
+    public class RpnContext : DbContext
     {
-        public RPNContext() : base("name=RPNContext")
-        {
-        }
+        public RpnContext() : base("name=RPNContext") { }
 
         public DbSet<History> History { get; set; }
 

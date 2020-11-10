@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 
 namespace RPN_Database
 {
     public static class ContextBuilder
     {
         #region Methods
-        public static void Build()
+        public static RpnContext CreateRpnContext()
         {
             string workingDirectory = Environment.CurrentDirectory;
             if (File.Exists(workingDirectory + "\\rpn.sqlite"))
@@ -39,6 +36,8 @@ namespace RPN_Database
                             Executed DATE NOT NULL);";
                 cmd.ExecuteNonQuery();
             }
+
+            return new RpnContext();
         }
         #endregion
     }

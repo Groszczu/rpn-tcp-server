@@ -15,40 +15,43 @@ namespace TcpServer
     public class ResponseServerAsync : ResponseServer<double>
     {
         private readonly HashSet<string> _connectedUsers = new HashSet<string>();
-        private readonly RPNContext _context;
-        protected readonly CreateContext _contextCreator;
+        private readonly RpnContext _context;
 
-        public ResponseServerAsync(IPAddress localAddress, int port, ResponseTransformer<double> transformer, Encoding responseEncoding, CreateContext creator, RPNContext context)
-            : base(localAddress, port, transformer, responseEncoding)
+        public ResponseServerAsync(IPAddress localAddress,
+                                   int port,
+                                   ResponseTransformer<double> transformer,
+                                   Encoding responseEncoding,
+                                   ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
         {
-            _contextCreator = creator;
-            _context = context;
+            _context = createContext();
         }
 
         public override async Task Start()
         {
             await base.Start();
-            _contextCreator();
+
             while (true)
             {
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
-                var task = ServeClient(tcpClient).ContinueWith((result) => _logger("Client disconnected"));
+                
+                ServeClient(tcpClient).ContinueWith((result) => _logger("Client disconnected"));
             }
         }
 
         private async Task ServeClient(TcpClient client)
         {
             var stream = client.GetStream();
-            await Send(stream, "You are connected\n\rPlease enter user name\n\r");
             var streamReader = new StreamReader(stream);
 
+            await Send(stream, "You are connected\n\rPlease enter user name\n\r");
             var username = streamReader.ReadLine();
+
+
             if (_connectedUsers.Contains(username))
             {
                 await Send(stream, "User already connected");
-                streamReader.Close();
-                stream.Close();
+                CloseStreams(streamReader);
                 return;
             }
             _connectedUsers.Add(username);
@@ -63,8 +66,7 @@ namespace TcpServer
                 }
                 catch (Exception)
                 {
-                    streamReader.Close();
-                    stream.Close();
+                    CloseStreams(streamReader);
                     return;
                 }
 
@@ -91,8 +93,7 @@ namespace TcpServer
                             Result = result
                         });
 
-                        _context.SaveChanges();
-
+                        await _context.SaveChangesAsync();
                         await Send(stream, result + "\n\r");
                     }
                     catch (Exception e)
@@ -102,15 +103,21 @@ namespace TcpServer
                 }
             }
 
-            streamReader.Close();
-            stream.Close();
-
+            CloseStreams(streamReader);
             _connectedUsers.Remove(username);
         }
 
         private Task Send(NetworkStream stream, string message)
         {
             return stream.WriteAsync(_encoding.GetBytes(message), 0, message.Length);
+        }
+
+        private void CloseStreams(StreamReader reader)
+        {
+            var stream = reader.BaseStream;
+
+            reader.Close();
+            stream.Close();
         }
     }
 }
