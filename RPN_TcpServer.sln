@@ -3,17 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpServer", "TcpServer\TcpServer.csproj", "{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_Calculator", "RPN_Calculator\RPN_Calculator.csproj", "{8FB7BBA0-E541-4FA1-87A6-9549680AD502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_TcpServer", "RPN_TcpServer\RPN_TcpServer.csproj", "{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8FB7BBA0-E541-4FA1-87A6-9549680AD502} = {8FB7BBA0-E541-4FA1-87A6-9549680AD502}
-		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0} = {6AE777D6-664D-484C-9FDB-1DDDF38B09D0}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPN_Database", "RPN_Database\RPN_Database.csproj", "{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_Database", "RPN_Database\RPN_Database.csproj", "{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_TcpServer", "RPN_TcpServer\RPN_TcpServer.csproj", "{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,22 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8FB7BBA0-E541-4FA1-87A6-9549680AD502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8FB7BBA0-E541-4FA1-87A6-9549680AD502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FB7BBA0-E541-4FA1-87A6-9549680AD502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FB7BBA0-E541-4FA1-87A6-9549680AD502}.Release|Any CPU.Build.0 = Release|Any CPU
-		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31D4ADD6-6FBA-4131-A5D8-2AA7D3A680D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE777D6-664D-484C-9FDB-1DDDF38B09D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

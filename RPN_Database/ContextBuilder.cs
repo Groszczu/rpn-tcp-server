@@ -1,44 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
+
+using static BCrypt.Net.BCrypt;
 
 namespace RPN_Database
 {
     public static class ContextBuilder
     {
         #region Methods
-        public static void Build()
+        public static RpnContext CreateRpnContext()
         {
             string workingDirectory = Environment.CurrentDirectory;
-            if (File.Exists(workingDirectory + "\\rpn.sqlite"))
+            if (File.Exists($"{workingDirectory}/rpn.sqlite"))
             {
                 Console.WriteLine("Database exist!");
             }
             else
             {
-                SQLiteConnection connect = new SQLiteConnection("Data Source=" + workingDirectory + "\\rpn.sqlite");
-                connect.Open();
+                SQLiteConnection conn = new SQLiteConnection($"Data Source={workingDirectory}/rpn.sqlite");
+
+                conn.Open();
                 Console.WriteLine("Database does not exist! Creating database...");
 
-                var cmd = connect.CreateCommand();
+                var cmd = conn.CreateCommand();
 
-                cmd.CommandText =
-                                @"CREATE TABLE Users ( Id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                            Username VARCHAR(64) NOT NULL UNIQUE, 
-                            Password VARCHAR(64) NOT NULL,
-                            Created DATE NOT NULL);";
+                cmd.CommandText = @"CREATE TABLE Users (
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    Username VARCHAR(64) NOT NULL UNIQUE, 
+                                    Password VARCHAR(64) NOT NULL,
+                                    Created DATE NOT NULL);";
+
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText =
-                                @"CREATE TABLE Histories ( Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Expression TEXT NOT NULL,
-                            Result TEXT NOT NULL,
-                            Executed DATE NOT NULL);";
+                cmd.CommandText = @"CREATE TABLE Histories (
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    Expression TEXT NOT NULL,
+                                    Result TEXT NOT NULL,
+                                    Executed DATE NOT NULL,
+                                    UserId INTEGER NOT NULL REFERENCES Users(Id));";
+
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('admin', '{EnhancedHashPassword("admin")}', CURRENT_TIMESTAMP);";
+
                 cmd.ExecuteNonQuery();
             }
+
+            return new RpnContext();
         }
         #endregion
     }
