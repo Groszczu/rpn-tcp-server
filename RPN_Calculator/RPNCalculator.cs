@@ -16,9 +16,9 @@ namespace RPN_Calculator
             { "*", (a, b) => a * b },
             { "/", (a, b) => a / b },
             { "^", (a, b) => (double)Math.Pow(a, b) },
-            { "root", (a, b) => (double)Math.Pow(b, 1.0 / a)
-    },
-
+            { "%", (a, b) => a % b},
+            { "root", (a, b) => (double)Math.Pow(b, 1.0 / a)},
+            { "log", (a, b) => (double)Math.Log(b, a)},
         };
 
         private const string InvalidInputMessage = "Input is not a valid RPN";

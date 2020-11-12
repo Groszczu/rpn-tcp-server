@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TcpServer
+namespace RPN_TcpServer
 {
 	/// <summary>
 	/// Class that listens for TCP connections and sends processed response back to client
