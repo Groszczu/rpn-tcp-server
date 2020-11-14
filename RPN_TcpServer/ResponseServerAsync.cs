@@ -52,11 +52,11 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] { "You are connected", "Please enter user name" });
-            var username = streamReader.ReadLine();
+            await Send(stream, new object[] { "You are connected", "Please enter user name" });
+            var username = await streamReader.ReadLineAsync();
 
             await Send(stream, "Please enter password");
-            var password = streamReader.ReadLine();
+            var password = await streamReader.ReadLineAsync();
 
             User user;
 
@@ -91,8 +91,8 @@ namespace RPN_TcpServer
                 string input;
                 try
                 {
-                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect or 'report <message>' to report a problem)");
-                    input = streamReader.ReadLine();
+                    await Send(stream, new object[] { "Enter RPN expression", "'history' to check last inputs", "'exit' to disconnect", "'report <message>' to report a problem"});
+                    input = await streamReader.ReadLineAsync();
                 }
                 catch (Exception)
                 {
@@ -104,11 +104,11 @@ namespace RPN_TcpServer
                 {
                     if (user.Username == "admin")
                     {
-                        await _context.History.ForEachAsync(async h => await Send(stream, h.ToString()));
+                        await Send(stream, _context.History.ToArray());
                     }
                     else
                     {
-                        await _context.History.Where(h => h.UserId == user.Id).ForEachAsync(async h => await Send(stream, h.ToString()));
+                        await Send(stream, _context.History.Where(h => h.UserId == user.Id).ToArray());
                     }
                 }
                 else if (Regex.IsMatch(input, @"^report\s.*"))
@@ -123,7 +123,7 @@ namespace RPN_TcpServer
                 {
                     if (user.Username == "admin")
                     {
-                        await _context.Reports.ForEachAsync(async r => await Send(stream, r.ToString())); 
+                        await Send(stream, _context.Reports.ToArray());
                     }
                     else
                     {
@@ -167,9 +167,15 @@ namespace RPN_TcpServer
             return stream.WriteAsync(_encoding.GetBytes(messageLine), 0, messageLine.Length);
         }
 
-        private Task Send(NetworkStream stream, string[] messages)
+        private Task Send(NetworkStream stream, object[] models)
         {
-            var messageLine = string.Join("\n\r", messages);
+            var messageLine = "";
+
+            for (int i = 0; i < models.Length; i++)
+            {
+                messageLine += $"{models[i]}\n\r";
+            }
+
             return Send(stream, messageLine);
         }
 
