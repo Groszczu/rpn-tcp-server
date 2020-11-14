@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
@@ -38,7 +39,11 @@ namespace RPN_TcpServer
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
 
-                ServeClient(tcpClient).ContinueWith(result => _logger("Client disconnected"));
+                var task = ServeClient(tcpClient).ContinueWith(result => _logger("Client disconnected"));
+                if (task.IsFaulted)
+                {
+                    await task;
+                }
             }
         }
 
@@ -47,10 +52,10 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, "You are connected\n\rPlease enter user name\n\r");
+            await Send(stream, new[] { "You are connected", "Please enter user name" });
             var username = streamReader.ReadLine();
 
-            await Send(stream, "Please enter password\n\r");
+            await Send(stream, "Please enter password");
             var password = streamReader.ReadLine();
 
             User user;
@@ -86,7 +91,7 @@ namespace RPN_TcpServer
                 string input;
                 try
                 {
-                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)\n\r");
+                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)");
                     input = streamReader.ReadLine();
                 }
                 catch (Exception)
@@ -99,11 +104,29 @@ namespace RPN_TcpServer
                 {
                     if (user.Username == "admin")
                     {
-                        await _context.History.ForEachAsync(async h => await Send(stream, $"{h}\n\r"));
+                        await _context.Reports.ForEachAsync(async r => await Send(stream, r.Message));
                     }
                     else
                     {
-                        await _context.History.Where(h => h.UserId == user.Id).ForEachAsync(async h => await Send(stream, $"{h}\n\r"));
+                        await _context.History.Where(h => h.UserId == user.Id).ForEachAsync(async h => await Send(stream, h.ToString()));
+                    }
+                }
+                else if (Regex.IsMatch( input, @"^report\s.*"))
+                {
+                    var match = Regex.Match(input, @"^report\s(?<message>.*)");
+                    var message = match.Groups["message"].Value;
+
+                    _context.Reports.Add(new ReportMessage { Message = message, UserId = user.Id });
+                }
+                else if (input == "get reports")
+                {
+                    if (user.Username == "admin")
+                    {
+                        await Send(stream, _context.Reports.Select(r => r.ToString()).ToArray());
+                    }
+                    else
+                    {
+                        await Send(stream, "Not authorized");
                     }
                 }
                 else if (input == "exit")
@@ -124,7 +147,7 @@ namespace RPN_TcpServer
                         });
 
                         await _context.SaveChangesAsync();
-                        await Send(stream, $"{result}\n\r");
+                        await Send(stream, result);
                     }
                     catch (Exception e)
                     {
@@ -139,7 +162,14 @@ namespace RPN_TcpServer
 
         private Task Send(NetworkStream stream, string message)
         {
-            return stream.WriteAsync(_encoding.GetBytes(message), 0, message.Length);
+            var messageLine = $"{message}\n\r";
+            return stream.WriteAsync(_encoding.GetBytes(messageLine), 0, messageLine.Length);
+        }
+
+        private Task Send(NetworkStream stream, string[] messages)
+        {
+            var messageLine = string.Join("\n\r", messages);
+            return Send(stream, messageLine);
         }
 
         private void CloseStreams(StreamReader reader)

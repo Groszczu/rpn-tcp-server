@@ -10,5 +10,7 @@ namespace RPN_Database
         public DbSet<History> History { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public DbSet<ReportMessage> Reports { get; set; }
+
     }
 }
