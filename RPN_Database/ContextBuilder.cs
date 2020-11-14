@@ -42,6 +42,14 @@ namespace RPN_Database
 
                 cmd.ExecuteNonQuery();
 
+                cmd.CommandText = @"CREATE TABLE Reports (
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    Message TEXT NOT NULL,
+                                    CreatedAt DATE NOT NULL,
+                                    UserId INTEGER NOT NULL REFERENCES Users(Id));";
+
+                cmd.ExecuteNonQuery();
+
                 cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('admin', '{EnhancedHashPassword("admin")}', CURRENT_TIMESTAMP);";
 
                 cmd.ExecuteNonQuery();
