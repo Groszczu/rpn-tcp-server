@@ -91,7 +91,7 @@ namespace RPN_TcpServer
                 string input;
                 try
                 {
-                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect)");
+                    await Send(stream, "Enter RPN expression ('history' to check last inputs, 'exit' to disconnect or 'report <message>' to report a problem)");
                     input = streamReader.ReadLine();
                 }
                 catch (Exception)
@@ -104,25 +104,26 @@ namespace RPN_TcpServer
                 {
                     if (user.Username == "admin")
                     {
-                        await _context.Reports.ForEachAsync(async r => await Send(stream, r.Message));
+                        await _context.History.ForEachAsync(async h => await Send(stream, h.ToString()));
                     }
                     else
                     {
                         await _context.History.Where(h => h.UserId == user.Id).ForEachAsync(async h => await Send(stream, h.ToString()));
                     }
                 }
-                else if (Regex.IsMatch( input, @"^report\s.*"))
+                else if (Regex.IsMatch(input, @"^report\s.*"))
                 {
                     var match = Regex.Match(input, @"^report\s(?<message>.*)");
                     var message = match.Groups["message"].Value;
 
-                    _context.Reports.Add(new ReportMessage { Message = message, UserId = user.Id });
+                    _context.Reports.Add(new Report { Message = message, User = user });
+                    await _context.SaveChangesAsync();
                 }
                 else if (input == "get reports")
                 {
                     if (user.Username == "admin")
                     {
-                        await Send(stream, _context.Reports.Select(r => r.ToString()).ToArray());
+                        await _context.Reports.ForEachAsync(async r => await Send(stream, r.ToString())); 
                     }
                     else
                     {
