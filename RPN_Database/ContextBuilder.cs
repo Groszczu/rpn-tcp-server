@@ -9,6 +9,10 @@ namespace RPN_Database
     public static class ContextBuilder
     {
         #region Methods
+        /// <summary>
+        /// Metoda zapewniająca utworzenie bazy danych i kontekstu do pobierania danych.
+        /// </summary>
+        /// <returns>Kontekst bazy danych kalkulatora RPN.</returns>
         public static RpnContext CreateRpnContext()
         {
             string workingDirectory = Environment.CurrentDirectory;
@@ -51,6 +55,10 @@ namespace RPN_Database
                 cmd.ExecuteNonQuery();
 
                 cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('admin', '{EnhancedHashPassword("admin")}', CURRENT_TIMESTAMP);";
+
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('user', '{EnhancedHashPassword("user")}', CURRENT_TIMESTAMP);";
 
                 cmd.ExecuteNonQuery();
             }

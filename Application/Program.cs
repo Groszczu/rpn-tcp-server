@@ -28,6 +28,11 @@ namespace RPN_TcpServer
             await rpnServer.Start();
         }
 
+        /// <summary>
+        /// Metoda parsująca argumenty dostarczone do programu w konsoli.
+        /// </summary>
+        /// <param name="args">Argumenty programu.</param>
+        /// <returns>Krotkę zawierającą adres IP i numer portu do nasłuchiwania.</returns>
         private static (IPAddress, int) TryParseConnectionArgs(string[] args)
         {
             try
