@@ -2,8 +2,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace TcpServer
+namespace RPN_TcpServer
 {
 	/// <summary>
 	/// Class that listens for TCP connections and sends processed response back to client
@@ -11,7 +12,7 @@ namespace TcpServer
 	/// <typeparam name="TResponse">Type of response that callback returns</typeparam>
 	public abstract class ResponseServer<TResponse>
 	{
-		protected readonly IResponseTransformer<TResponse> _transformer;
+		protected readonly ResponseTransformer<TResponse> _transformer;
 		protected readonly TcpListener _server;
 		protected readonly Encoding _encoding;
 		protected readonly Action<string> _logger;
@@ -27,7 +28,7 @@ namespace TcpServer
 		/// <param name="port">Port that server is listening on</param>
 		/// <param name="transformer">Delegate that transforms received message</param>
 		/// <param name="responseEncoding">Encoding that server will use during reading and writing</param>
-		public ResponseServer(IPAddress localAddress, int port, IResponseTransformer<TResponse> transformer, Encoding responseEncoding, Action<string> logger = null)
+		public ResponseServer(IPAddress localAddress, int port, ResponseTransformer<TResponse> transformer, Encoding responseEncoding, Action<string> logger = null)
 		{
 			_iPAddress = localAddress;
 			_port = port;
@@ -42,7 +43,7 @@ namespace TcpServer
 		/// After receiving message uses encoding to parse it to string and pass it as input
 		/// to callback function. Result of callback is sent back to client
 		/// </summary>
-		public virtual void Start()
+		public virtual async Task Start()
         {
 			_logger($"Listening on {_iPAddress}:{_port}");
 			_server.Start();
