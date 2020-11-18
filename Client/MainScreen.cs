@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace Client
@@ -16,20 +7,17 @@ namespace Client
     {
 
         private TcpClient _client;
-
-        private readonly NetworkStream _stream;
-        private readonly StreamReader _streamReader;
+        private readonly (string, int) _ipAddressTuple;
 
         public MainScreen()
         {
             InitializeComponent();
         }
 
-        public MainScreen(TcpClient client, NetworkStream stream, StreamReader streamReader)
+        public MainScreen(TcpClient client, (string, int) ipAddressTuple)
         {
             _client = client;
-            _stream = stream;
-            _streamReader = streamReader;
+            _ipAddressTuple = ipAddressTuple;
         }
     }
 }

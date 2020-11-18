@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Client.exceptions;
 using Exception = System.Exception;
 
 namespace Client
 {
     class ClientUtil
     {
-        private static readonly int TASK_TIMEOUT = 500;
         private static readonly int MIN_PORT = 1024;
         private static readonly int MAX_PORT = 65535;
 
@@ -61,29 +63,38 @@ namespace Client
         public static Task<string> ReadFromStreamAsync(StreamReader reader) => reader.ReadLineAsync();
 
         /// <summary>
-        /// Odczytuje wszystkie zaległe wiadomości ze strumienia.
+        /// Obsługuje naciśnięcie przycisku logowania.
         /// </summary>
-        /// <returns>Zadanie zwracające ostatnią odczytaną wiadomość.</returns>
-        public static async Task<string> FlushStreamAsync(StreamReader reader)
+        /// <exception cref="ServerDownException">Gdy serwer przestał odpowiadać.</exception>
+        /// <exception cref="DuplicateNameException">Gdy użytkownik jest już zalogowany.</exception>
+        /// <exception cref="ServerDownException">Gdy dane użytkownika nie istnieją w bazie danych serwera.</exception>
+        /// <exception cref="ArgumentException">Gdy dane użytkownika są puste.</exception>
+        public static async Task HandleLoginProcedure(NetworkStream stream, string username, string password)
         {
-            using (var cancellationToken = new CancellationTokenSource())
-            {
-                string lastMessage = "";
+            var streamReader = new StreamReader(stream);
 
-                while (true)
-                {
-                    var task = reader.ReadLineAsync();
-                    var completedTask = await Task.WhenAny(task, Task.Delay(TASK_TIMEOUT, cancellationToken.Token));
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                throw new ArgumentNullException("fields cannot be blank");
 
-                    if (completedTask == task)
-                    {
-                        cancellationToken.Cancel();
-                        lastMessage = await task;
-                    }
+            _ = await ReadFromStreamAsync(streamReader); //You are connected
+            _ = await ReadFromStreamAsync(streamReader); //Please enter username
 
-                    return lastMessage;
-                }
-            }
+            await SendToStreamAsync(stream, username);
+
+            _ = await ReadFromStreamAsync(streamReader); //Please enter password
+
+            await SendToStreamAsync(stream, password);
+
+            var message = await ReadFromStreamAsync(streamReader);
+
+            if (message == "User is already connected")
+                throw new DuplicateNameException("a user with given username is already logged in");
+
+            if (message == "User doesn't exist")
+                throw new InvalidCredentialException("a user with given credentials does not exist");
+
+            if (message == "Invalid password")
+                throw new InvalidCredentialException("wrong password");
         }
     }
 }
