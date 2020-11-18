@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -19,7 +20,8 @@ namespace Client
     {
         public static int MinPort { get; } = 1024;
         public static int MaxPort { get; } = 65535;
-        public static string RpxRegex { get; } = @"^(\d*\.?\d*)( (\d*\.?\d*) ([\+\-\*\/^%]|root|log))+$";
+        public static string RpnRegex { get; } = @"^(\d*\.?\d*)( (\d*\.?\d*) ([\+\-\*\/^%]|root|log))+$";
+        public static string HistoryRegex { get; } = @"^History{.*}$";
 
         /// <summary>
         /// Metoda sprawdzająca poprawność adresu IP i portu i zwracająca go jeśli jest on poprawny.
@@ -104,7 +106,7 @@ namespace Client
         /// </summary>
         /// <param name="expression">Wyrażenie do sprawdzenia.</param>
         /// <returns></returns>
-        public static bool IsValidRpn(string expression) => Regex.IsMatch(expression, RpxRegex);
+        public static bool IsValidRpn(string expression) => Regex.IsMatch(expression, RpnRegex);
 
         /// <summary>
         /// Funkcja rozszerzająca umożliwiająca kolorowanie składni wyrażenia RPN wewnątrz RichTextBox'a.
@@ -138,6 +140,35 @@ namespace Client
                 throw new DataException("returned result is non a number");
 
             return result;
+        }
+
+        public static async Task<List<string>> ProcessHistoryRequest(NetworkStream stream)
+        {
+            var streamReader = new StreamReader(stream);
+
+            await SendToStreamAsync(stream, "history");
+
+            string line;
+            var result = new List<string>();
+
+            while (Regex.IsMatch(line = await streamReader.ReadLineAsync(), HistoryRegex))
+            {
+                result.Add(line);
+            };
+
+            _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
+            _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
+            _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
+
+            return result;
+        }
+
+
+        public static async Task ProcessDisconnectRequest(NetworkStream stream)
+        {
+            var streamReader = new StreamReader(stream);
+
+            await SendToStreamAsync(stream, "exit");
         }
     }
 }

@@ -122,6 +122,7 @@
             this.logOutButton.TabIndex = 8;
             this.logOutButton.Text = "Log out";
             this.logOutButton.UseVisualStyleBackColor = true;
+            this.logOutButton.Click += new System.EventHandler(this.logOutButton_Click);
             // 
             // historyButton
             // 
@@ -131,6 +132,7 @@
             this.historyButton.TabIndex = 9;
             this.historyButton.Text = "Show my calculation history";
             this.historyButton.UseVisualStyleBackColor = true;
+            this.historyButton.Click += new System.EventHandler(this.historyButton_Click);
             // 
             // reportViewButton
             // 

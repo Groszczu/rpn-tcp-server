@@ -48,6 +48,12 @@
   <ItemGroup>
     <Compile Include="ClientUtil.cs" />
     <Compile Include="exceptions\ServerDownException.cs" />
+    <Compile Include="HistoryScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HistoryScreen.Designer.cs">
+      <DependentUpon>HistoryScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,6 +68,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="HistoryScreen.resx">
+      <DependentUpon>HistoryScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoginScreen.resx">
       <DependentUpon>LoginScreen.cs</DependentUpon>
     </EmbeddedResource>
