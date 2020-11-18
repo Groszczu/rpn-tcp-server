@@ -175,12 +175,12 @@ namespace RPN_TcpServer
         }
         private Task Send(NetworkStream stream, IEnumerable<string> lines)
         {
-            return Send(stream, string.Join("\n\r", lines));
+            return Send(stream, string.Join("\r\n", lines));
         }
 
         private Task Send(NetworkStream stream, string message)
         {
-            var messageLine = $"{message}\n\r";
+            var messageLine = $"{message}\r\n";
             return stream.WriteAsync(_encoding.GetBytes(messageLine), 0, messageLine.Length);
         }
 

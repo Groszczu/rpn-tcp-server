@@ -1,6 +1,6 @@
 ﻿namespace Client
 {
-    partial class Client
+    partial class MainScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -28,22 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            // 
-            // Form1
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(5F, 15F);
+            this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(667, 519);
-            this.Font = new System.Drawing.Font("Noto Sans Cond", 8.249999F);
-            this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.Name = "Form1";
-            this.Text = "RPN calculator client";
-            this.ResumeLayout(false);
-
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Text = "MainScreen";
         }
 
         #endregion
     }
 }
-
