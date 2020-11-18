@@ -19,6 +19,7 @@ namespace RPN_TcpServer
     {
         private readonly HashSet<User> _connectedUsers;
         private readonly RpnContext _context;
+        private User _currentUser;
 
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
@@ -47,7 +48,12 @@ namespace RPN_TcpServer
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
 
-                var task = ServeClient(tcpClient).ContinueWith(result => _logger("Client disconnected"));
+                var task = ServeClient(tcpClient).ContinueWith(result =>
+                {
+                    _connectedUsers.Remove(_currentUser);
+                    _logger("Client disconnected");
+                });
+
                 if (task.IsFaulted)
                 {
                     await task;
@@ -66,19 +72,17 @@ namespace RPN_TcpServer
             await Send(stream, "Please enter password");
             var password = await streamReader.ReadLineAsync();
 
-            User user;
-
             try
             {
-                user = _context.Users.First(u => u.Username == username);
+                _currentUser = _context.Users.First(u => u.Username == username);
 
-                if (_connectedUsers.Contains(user))
+                if (_connectedUsers.Contains(_currentUser))
                 {
                     await Send(stream, "User is already connected");
                     CloseStreams(streamReader);
                     return;
                 }
-                if (!EnhancedVerify(password, user.Password))
+                if (!EnhancedVerify(password, _currentUser.Password))
                 {
                     await Send(stream, "Invalid password");
                     CloseStreams(streamReader);
@@ -92,7 +96,7 @@ namespace RPN_TcpServer
                 return;
             }
 
-            _connectedUsers.Add(user);
+            _connectedUsers.Add(_currentUser);
 
             while (true)
             {
@@ -110,13 +114,13 @@ namespace RPN_TcpServer
 
                 if (input == "history")
                 {
-                    if (user.Username == "admin")
+                    if (_currentUser.Username == "admin")
                     {
                         await Send(stream, _context.History);
                     }
                     else
                     {
-                        await Send(stream, _context.History.Where(h => h.UserId == user.Id));
+                        await Send(stream, _context.History.Where(h => h.UserId == _currentUser.Id));
                     }
                 }
                 else if (Regex.IsMatch(input, @"^report\s.*"))
@@ -124,12 +128,12 @@ namespace RPN_TcpServer
                     var match = Regex.Match(input, @"^report\s(?<message>.*)");
                     var message = match.Groups["message"].Value;
 
-                    _context.Reports.Add(new Report { Message = message, User = user });
+                    _context.Reports.Add(new Report { Message = message, User = _currentUser });
                     await _context.SaveChangesAsync();
                 }
                 else if (input == "get reports")
                 {
-                    if (user.Username == "admin")
+                    if (_currentUser.Username == "admin")
                     {
                         await Send(stream, _context.Reports);
                     }
@@ -152,7 +156,7 @@ namespace RPN_TcpServer
                         {
                             Expression = input,
                             Result = result,
-                            User = user
+                            User = _currentUser
                         });
 
                         await _context.SaveChangesAsync();
@@ -166,7 +170,6 @@ namespace RPN_TcpServer
             }
 
             CloseStreams(streamReader);
-            _connectedUsers.Remove(user);
         }
 
         private Task Send(NetworkStream stream, IEnumerable<object> models)

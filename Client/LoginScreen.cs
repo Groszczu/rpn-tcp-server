@@ -1,108 +1,89 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Security.Authentication;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Client.exceptions;
+
+using static Client.ClientUtil;
 
 namespace Client
 {
     public partial class LoginScreen : Form
     {
-        private static readonly int BUFFER_SIZE = 1024;
-        private static readonly int TASK_TIMEOUT = 500;
-
         private TcpClient _client;
+        private NetworkStream _stream;
+        private StreamReader _streamReader;
+        private (string, int) _ipAddressTuple;
 
-        private readonly NetworkStream _stream;
-        private readonly StreamReader _streamReader;
-
-        public LoginScreen(TcpClient client)
+        public LoginScreen()
         {
             InitializeComponent();
-
-            _client = client;
-            _stream = client.GetStream();
-            _streamReader = new StreamReader(_stream);
         }
 
         private async void loginButton_Click(object sender, EventArgs eventArgs)
         {
             try
             {
-                await HandleLoginButton();
+                var (ip, port) = _ipAddressTuple = ParseConnectionArgs(ipTextBox.Text, portTextBox.Text);
+                _client = new TcpClient(ip, port);
+
+                _stream = _client.GetStream();
+                _streamReader = new StreamReader(_stream);
+
+                await HandleLoginProcedure();
+            }
+            catch (ArgumentException e)
+            {
+                messageLabel.Text = e.Message;
+                return;
             }
             catch (ServerDownException e)
             {
-                titleLabel.Text = "Server went down, please contact the administrator.";
+                loginLabel.Text = "Server went down, please contact the administrator.";
                 return;
             }
             catch (InvalidCredentialException e)
             {
-                titleLabel.Text = "Invalid credentials. Try again or create an account.";
+                loginLabel.Text = "Invalid credentials. Try again or create an account.";
+                return;
+            }
+            catch (DuplicateNameException e)
+            {
+                loginLabel.Text = "This account is already connected with the server right now.";
                 return;
             }
 
             Hide();
 
-            var loginScreen = new MainScreen(_client, _stream, _streamReader);
+            var mainScreen = new MainScreen(_client, _stream, _streamReader);
 
-            loginScreen.Closed += (s, args) => Close();
-            loginScreen.Show();
+            mainScreen.Closed += (s, args) => Close();
+            mainScreen.Show();
         }
 
-        private async Task HandleLoginButton()
+        /// <summary>
+        /// Obsługuje naciśnięcie przycisku logowania.
+        /// </summary>
+        /// <exception cref="ServerDownException">Gdy serwer przestał odpowiadać.</exception>
+        /// <exception cref="DuplicateNameException">Gdy użytkownik jest już zalogowany.</exception>
+        /// <exception cref="ServerDownException">Gdy dane użytkownika nie istnieją w bazie danych serwera.</exception>
+        private async Task HandleLoginProcedure()
         {
-            var message = await ReadFromStreamAsync();
+            var message = await ReadFromStreamAsync(_streamReader);
             if (message != "You are connected") throw new ServerDownException("server is not responding after a successful first connection");
 
-            await FlushStreamAsync();
-            await SendToStreamAsync(usernameTextBox.Text);
+            await SendToStreamAsync(_stream, usernameTextBox.Text);
 
-            await FlushStreamAsync();
-            await SendToStreamAsync(passwordTextBox.Text);
+            await FlushStreamAsync(_streamReader);
 
-            message = await ReadFromStreamAsync();
-            if (message != "Enter RPN expression") throw new InvalidCredentialException("could not log in to the server");
-        }
+            await SendToStreamAsync(_stream, passwordTextBox.Text);
 
-        private Task SendToStreamAsync(string message)
-        {
-            var messageLine = $"{message}\r\n";
-
-            return _stream.WriteAsync(Encoding.UTF8.GetBytes(messageLine), 0, messageLine.Length);
-        }
-
-        private Task<string> ReadFromStreamAsync() => _streamReader.ReadLineAsync();
-
-        private async Task<string> FlushStreamAsync()
-        {
-            using (var cancellationToken = new CancellationTokenSource())
-            {
-                string lastMessage = "";
-
-                while (true)
-                {
-                    var task = _streamReader.ReadLineAsync();
-                    var completedTask = await Task.WhenAny(task, Task.Delay(500, cancellationToken.Token));
-
-                    if (completedTask == task)
-                    {
-                        cancellationToken.Cancel();
-                        lastMessage = await task;
-                    }
-
-                    return lastMessage;
-                }
-            }
+            message = await ReadFromStreamAsync(_streamReader);
+            if (message == "User is already connected") throw new DuplicateNameException("a user with given username is already logged in");
+            if (message == "User doesn't exist") throw new InvalidCredentialException("a user with given credentials does not exist");
         }
     }
 }

@@ -46,13 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientUtil.cs" />
     <Compile Include="exceptions\ServerDownException.cs" />
-    <Compile Include="InitScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InitScreen.Designer.cs">
-      <DependentUpon>InitScreen.cs</DependentUpon>
-    </Compile>
     <Compile Include="LoginScreen.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -67,9 +62,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="InitScreen.resx">
-      <DependentUpon>InitScreen.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="LoginScreen.resx">
       <DependentUpon>LoginScreen.cs</DependentUpon>
     </EmbeddedResource>
