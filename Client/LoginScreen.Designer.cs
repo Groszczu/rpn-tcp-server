@@ -41,14 +41,13 @@
             this.connectionLabel = new System.Windows.Forms.Label();
             this.ipLabel = new System.Windows.Forms.Label();
             this.portLabel = new System.Windows.Forms.Label();
-            this.messageLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // loginLabel
             // 
             this.loginLabel.AutoSize = true;
             this.loginLabel.Font = new System.Drawing.Font("DejaVu Serif Condensed", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.loginLabel.Location = new System.Drawing.Point(460, 112);
+            this.loginLabel.Location = new System.Drawing.Point(453, 32);
             this.loginLabel.Name = "loginLabel";
             this.loginLabel.Size = new System.Drawing.Size(358, 34);
             this.loginLabel.TabIndex = 0;
@@ -60,7 +59,7 @@
             // 
             this.usernameLabel.AutoSize = true;
             this.usernameLabel.Font = new System.Drawing.Font("DejaVu Serif Condensed", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.usernameLabel.Location = new System.Drawing.Point(429, 192);
+            this.usernameLabel.Location = new System.Drawing.Point(422, 112);
             this.usernameLabel.Name = "usernameLabel";
             this.usernameLabel.Size = new System.Drawing.Size(85, 19);
             this.usernameLabel.TabIndex = 1;
@@ -70,7 +69,7 @@
             // 
             this.passwordLabel.AutoSize = true;
             this.passwordLabel.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.passwordLabel.Location = new System.Drawing.Point(429, 255);
+            this.passwordLabel.Location = new System.Drawing.Point(422, 175);
             this.passwordLabel.Name = "passwordLabel";
             this.passwordLabel.Size = new System.Drawing.Size(90, 19);
             this.passwordLabel.TabIndex = 2;
@@ -79,7 +78,7 @@
             // usernameTextBox
             // 
             this.usernameTextBox.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.usernameTextBox.Location = new System.Drawing.Point(433, 214);
+            this.usernameTextBox.Location = new System.Drawing.Point(426, 134);
             this.usernameTextBox.MaxLength = 100;
             this.usernameTextBox.Name = "usernameTextBox";
             this.usernameTextBox.Size = new System.Drawing.Size(414, 26);
@@ -88,7 +87,7 @@
             // passwordTextBox
             // 
             this.passwordTextBox.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.passwordTextBox.Location = new System.Drawing.Point(433, 277);
+            this.passwordTextBox.Location = new System.Drawing.Point(426, 197);
             this.passwordTextBox.MaxLength = 100;
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.Size = new System.Drawing.Size(414, 26);
@@ -98,7 +97,7 @@
             // loginButton
             // 
             this.loginButton.Font = new System.Drawing.Font("DejaVu Serif Condensed", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.loginButton.Location = new System.Drawing.Point(450, 324);
+            this.loginButton.Location = new System.Drawing.Point(443, 262);
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(151, 35);
             this.loginButton.TabIndex = 5;
@@ -110,16 +109,17 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("DejaVu Serif Condensed", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.label1.Location = new System.Drawing.Point(684, 319);
+            this.label1.Location = new System.Drawing.Point(632, 244);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(143, 13);
+            this.label1.Size = new System.Drawing.Size(275, 26);
             this.label1.TabIndex = 6;
-            this.label1.Text = "Don\'t have an account yet?";
+            this.label1.Text = "Don\'t have an account yet? \r\nEnter your desired username and password and press";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // registerButton
             // 
             this.registerButton.Font = new System.Drawing.Font("DejaVu Serif Condensed", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.registerButton.Location = new System.Drawing.Point(722, 335);
+            this.registerButton.Location = new System.Drawing.Point(743, 273);
             this.registerButton.Name = "registerButton";
             this.registerButton.Size = new System.Drawing.Size(68, 24);
             this.registerButton.TabIndex = 7;
@@ -130,7 +130,7 @@
             // portTextBox
             // 
             this.portTextBox.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.portTextBox.Location = new System.Drawing.Point(62, 277);
+            this.portTextBox.Location = new System.Drawing.Point(55, 197);
             this.portTextBox.MaxLength = 5;
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(276, 26);
@@ -140,7 +140,7 @@
             // ipTextBox
             // 
             this.ipTextBox.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ipTextBox.Location = new System.Drawing.Point(62, 214);
+            this.ipTextBox.Location = new System.Drawing.Point(55, 134);
             this.ipTextBox.MaxLength = 15;
             this.ipTextBox.Name = "ipTextBox";
             this.ipTextBox.Size = new System.Drawing.Size(276, 26);
@@ -152,7 +152,7 @@
             this.connectionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.connectionLabel.AutoSize = true;
             this.connectionLabel.Font = new System.Drawing.Font("DejaVu Serif Condensed", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.connectionLabel.Location = new System.Drawing.Point(46, 112);
+            this.connectionLabel.Location = new System.Drawing.Point(41, 35);
             this.connectionLabel.Name = "connectionLabel";
             this.connectionLabel.Size = new System.Drawing.Size(307, 44);
             this.connectionLabel.TabIndex = 8;
@@ -163,7 +163,7 @@
             // 
             this.ipLabel.AutoSize = true;
             this.ipLabel.Font = new System.Drawing.Font("DejaVu Serif Condensed", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ipLabel.Location = new System.Drawing.Point(58, 192);
+            this.ipLabel.Location = new System.Drawing.Point(51, 112);
             this.ipLabel.Name = "ipLabel";
             this.ipLabel.Size = new System.Drawing.Size(88, 19);
             this.ipLabel.TabIndex = 11;
@@ -173,27 +173,17 @@
             // 
             this.portLabel.AutoSize = true;
             this.portLabel.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.portLabel.Location = new System.Drawing.Point(58, 255);
+            this.portLabel.Location = new System.Drawing.Point(51, 175);
             this.portLabel.Name = "portLabel";
             this.portLabel.Size = new System.Drawing.Size(115, 19);
             this.portLabel.TabIndex = 12;
             this.portLabel.Text = "Port number";
             // 
-            // messageLabel
-            // 
-            this.messageLabel.AutoSize = true;
-            this.messageLabel.Font = new System.Drawing.Font("Noto Serif Cond", 14.25F);
-            this.messageLabel.Location = new System.Drawing.Point(50, 29);
-            this.messageLabel.Name = "messageLabel";
-            this.messageLabel.Size = new System.Drawing.Size(0, 26);
-            this.messageLabel.TabIndex = 13;
-            // 
             // LoginScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(5F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(926, 519);
-            this.Controls.Add(this.messageLabel);
+            this.ClientSize = new System.Drawing.Size(926, 358);
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.ipLabel);
             this.Controls.Add(this.portTextBox);
@@ -209,6 +199,7 @@
             this.Controls.Add(this.loginLabel);
             this.Font = new System.Drawing.Font("Noto Sans Cond", 8.249999F);
             this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.MaximizeBox = false;
             this.Name = "LoginScreen";
             this.Text = "RPN calculator - Log in";
             this.ResumeLayout(false);
@@ -231,7 +222,6 @@
         private System.Windows.Forms.Label connectionLabel;
         private System.Windows.Forms.Label ipLabel;
         private System.Windows.Forms.Label portLabel;
-        private System.Windows.Forms.Label messageLabel;
     }
 }
 

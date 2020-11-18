@@ -46,7 +46,7 @@ namespace RPN_Calculator
         {
             var valuesStack = new Stack<double>();
           
-            Array.ForEach(input?.Split(' '), n =>
+            Array.ForEach(input?.Split(' ') ?? throw new ArgumentException("empty input"), n =>
             {
                 if (double.TryParse(n, out var num))
                 {

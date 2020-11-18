@@ -28,31 +28,31 @@ namespace Client
             }
             catch (ArgumentNullException)
             {
-                messageLabel.Text = "None of the credential fields can be empty.";
+                MessageBox.Show("None of the credential fields can be empty.", "Error");
                 return;
             }
             catch (ArgumentException)
             {
-                messageLabel.Text = "Provided server info is invalid.";
+                MessageBox.Show("Provided server info is invalid.", "Error");
                 return;
             }
             catch (SocketException)
             {
-                messageLabel.Text = "Server went down, please contact the administrator.";
+                MessageBox.Show("Server went down, please contact the administrator.", "Error");
                 return;
             }
             catch (InvalidCredentialException e)
             {
-                messageLabel.Text = $"Invalid credentials: {e.Message}.";
+                MessageBox.Show($"Invalid credentials: {e.Message}.", "Error");
                 return;
             }
             catch (DuplicateNameException)
             {
-                messageLabel.Text = "This account is already connected with the server right now.";
+                MessageBox.Show("This account is already connected with the server right now.", "Error");
                 return;
             }
 
-            var mainScreen = new MainScreen(client, ipAddressTuple);
+            var mainScreen = new MainScreen(client, ipAddressTuple, usernameTextBox.Text);
 
             Hide();
             mainScreen.Closed += (s, args) => Close();

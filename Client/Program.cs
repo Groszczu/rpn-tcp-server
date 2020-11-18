@@ -14,6 +14,8 @@ namespace Client
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new LoginScreen());
+
+            //Application.Run(new MainScreen(null, ("null", 0), "Byczek69"));
         }
     }
 }

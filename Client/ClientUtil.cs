@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Client.exceptions;
 using Exception = System.Exception;
 
 namespace Client
 {
-    class ClientUtil
+    public static class ClientUtil
     {
-        private static readonly int MIN_PORT = 1024;
-        private static readonly int MAX_PORT = 65535;
+        public static int MinPort { get; } = 1024;
+        public static int MaxPort { get; } = 65535;
+        public static string RpxRegex { get; } = @"^(\d*\.?\d*)( (\d*\.?\d*) ([\+\-\*\/^%]|root|log))+$";
 
         /// <summary>
         /// Metoda sprawdzająca poprawność adresu IP i portu i zwracająca go jeśli jest on poprawny.
@@ -31,7 +35,7 @@ namespace Client
                 _ = IPAddress.Parse(ip);
                 var portNumber = int.Parse(port);
 
-                if (portNumber < MIN_PORT || portNumber > MAX_PORT)
+                if (portNumber < MinPort || portNumber > MaxPort)
                 {
                     throw new ArgumentException("invalid port number");
                 }
@@ -49,18 +53,12 @@ namespace Client
         /// </summary>
         /// <param name="message">Wiadomość do wysłania.</param>
         /// <returns>Zadanie wysyłające wiadomość do strumienia.</returns>
-        public static Task SendToStreamAsync(NetworkStream stream, string message)
+        private static Task SendToStreamAsync(NetworkStream stream, string message)
         {
             var messageLine = $"{message}\r\n";
 
             return stream.WriteAsync(Encoding.UTF8.GetBytes(messageLine), 0, messageLine.Length);
         }
-
-        /// <summary>
-        /// Odczytuje linię ze strumienia.
-        /// </summary>
-        /// <returns>Zadanie odczytujące linię.</returns>
-        public static Task<string> ReadFromStreamAsync(StreamReader reader) => reader.ReadLineAsync();
 
         /// <summary>
         /// Obsługuje naciśnięcie przycisku logowania.
@@ -76,25 +74,70 @@ namespace Client
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 throw new ArgumentNullException("fields cannot be blank");
 
-            _ = await ReadFromStreamAsync(streamReader); //You are connected
-            _ = await ReadFromStreamAsync(streamReader); //Please enter username
+            _ = await streamReader.ReadLineAsync(); //You are connected
+            _ = await streamReader.ReadLineAsync(); //Please enter username
 
             await SendToStreamAsync(stream, username);
 
-            _ = await ReadFromStreamAsync(streamReader); //Please enter password
+            _ = await streamReader.ReadLineAsync(); //Please enter password
 
             await SendToStreamAsync(stream, password);
 
-            var message = await ReadFromStreamAsync(streamReader);
+            var message = await streamReader.ReadLineAsync(); //Enter RPN Expression / Error
 
             if (message == "User is already connected")
-                throw new DuplicateNameException("a user with given username is already logged in");
+                throw new DuplicateNameException(message);
 
             if (message == "User doesn't exist")
-                throw new InvalidCredentialException("a user with given credentials does not exist");
+                throw new InvalidCredentialException(message);
 
             if (message == "Invalid password")
-                throw new InvalidCredentialException("wrong password");
+                throw new InvalidCredentialException(message);
+
+            _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
+            _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
+            _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
+        }
+
+        /// <summary>
+        /// Sprawdza czy podane wyrażenie RPN jest poprawne składniowo.
+        /// </summary>
+        /// <param name="expression">Wyrażenie do sprawdzenia.</param>
+        /// <returns></returns>
+        public static bool IsValidRpn(string expression) => Regex.IsMatch(expression, RpxRegex);
+
+        /// <summary>
+        /// Funkcja rozszerzająca umożliwiająca kolorowanie składni wyrażenia RPN wewnątrz RichTextBox'a.
+        /// </summary>
+        public static void ValidateAndColorRpnExpression(this RichTextBox textBox)
+        {
+            var currentText = textBox.Text;
+            textBox.Text = String.Empty;
+
+            textBox.SelectionColor = IsValidRpn(currentText) ? Color.Green : Color.Red;
+            textBox.AppendText(currentText);
+        }
+
+        public static async Task<string> ProcessCalculationRequest(NetworkStream stream, string expression)
+        {
+            var streamReader = new StreamReader(stream);
+
+            if (!IsValidRpn(expression))
+                throw new ArgumentException("invalid rpn expression");
+
+            await SendToStreamAsync(stream, expression);
+
+            var result = await streamReader.ReadLineAsync(); // OK / Error
+
+            _ = await streamReader.ReadLineAsync(); //Enter RPN Expression
+            _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
+            _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
+            _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
+
+            if (!double.TryParse(result, out _))
+                throw new DataException("returned result is non a number");
+
+            return result;
         }
     }
 }
