@@ -30,25 +30,14 @@ namespace RPN_Calculator
         /// </summary>
         /// <param name="input">RPN expression</param>
         /// <returns>result of RPN expression</returns>
-        public static double Calculate(string input)
-        {
-            try
-            {
-                return GetResult(input);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException($"{InvalidInputMessage}. Input: {input}");
-            }
-        }
 
-        private static double GetResult(string input)
+        public static double GetResult(string input)
         {
             var valuesStack = new Stack<double>();
-          
+
             Array.ForEach(input?.Split(' ') ?? throw new ArgumentException("empty input"), n =>
             {
-                if (double.TryParse(n, out var num))
+                if (double.TryParse(n, out double num))
                 {
                     valuesStack.Push(num);
                 }
@@ -59,13 +48,15 @@ namespace RPN_Calculator
                     var arg2 = valuesStack.Pop();
                     var arg1 = valuesStack.Pop();
                     var result = func(arg1, arg2);
+                    if (double.IsNegativeInfinity(result) || double.IsPositiveInfinity(result))
+                        throw new DivideByZeroException(InvalidInputMessage);
                     valuesStack.Push(result);
                 }
             });
 
             if (valuesStack.Count() != 1)
             {
-                throw new ArgumentException(InvalidInputMessage);
+                throw new IndexOutOfRangeException(InvalidInputMessage);
             }
 
             return valuesStack.Pop();

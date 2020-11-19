@@ -12,7 +12,9 @@ namespace RPN_TcpServer
     {
         public static async Task Main(string[] args)
         {
-            var (ipAddress, port) = args.Length == 0 
+            try
+            {
+            var (ipAddress, port) = args.Length == 0
                 ? (IPAddress.Loopback, 1024)
                 : TryParseConnectionArgs(args);
 
@@ -23,9 +25,23 @@ namespace RPN_TcpServer
             }
 
             Console.WriteLine(ipAddress.ToString());
-            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext);
-
-            await rpnServer.Start();
+            
+            
+                ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext);
+                await rpnServer.Start();
+            }
+            catch (DivideByZeroException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch(ArgumentException e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         /// <summary>

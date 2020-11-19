@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,41 +15,27 @@ namespace RPN_Tests
         [TestMethod]
         public void IPAdressCheckTest()
         {
-            try
-            {
-                var port = 1024;
-                var ipAddress = IPAddress.Parse("0.0");
-                ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext);
-                Assert.Fail();
-            }
-            catch (ArgumentException e)
-            {
-                Assert.Fail();
-            }
-            catch (Exception e)
-            {
-
-            }
+            var port = 1024;
+            var ipAddress = IPAddress.Parse("0.0");
+            Assert.ThrowsException<FileNotFoundException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext));
         }
 
         [TestMethod]
         public void PortNumberCheckTest()
         {
-            try
-            {
-                var port = 443;
-                var ipAddress = IPAddress.Parse("127.0.0.1");
-                ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext);
-                Assert.Fail();
-            }
-            catch (ArgumentException e)
-            {
-                Assert.Fail();
-            }
-            catch (Exception e)
-            {
+            var port = 443;
+            var ipAddress = IPAddress.Parse("127.0.0.1");
+            Assert.ThrowsException<FileNotFoundException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext));
 
-            }
+        }
+
+        [TestMethod]
+        public void NullArgumentTest()
+        {
+            var port = -2;
+            var ipAddress = IPAddress.Parse("127.0.0.1");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.Calculate, Encoding.ASCII, ContextBuilder.CreateRpnContext));
+
         }
     }
 }
