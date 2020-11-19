@@ -168,6 +168,7 @@
             this.Text = "RPN Calculator - Logged in as";
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 
         }
 
