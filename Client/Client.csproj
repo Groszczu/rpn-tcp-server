@@ -46,13 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientUtil.cs" />
-    <Compile Include="exceptions\ServerDownException.cs" />
-    <Compile Include="HistoryScreen.cs">
+    <Compile Include="Utility\Core.cs" />
+    <Compile Include="Exceptions\ServerDownException.cs" />
+    <Compile Include="ListScreen.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="HistoryScreen.Designer.cs">
-      <DependentUpon>HistoryScreen.cs</DependentUpon>
+    <Compile Include="ListScreen.Designer.cs">
+      <DependentUpon>ListScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="LoginScreen.cs">
       <SubType>Form</SubType>
@@ -68,8 +68,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="HistoryScreen.resx">
-      <DependentUpon>HistoryScreen.cs</DependentUpon>
+    <Compile Include="Utility\Procedures.cs" />
+    <Compile Include="Utility\Request.cs" />
+    <EmbeddedResource Include="ListScreen.resx">
+      <DependentUpon>ListScreen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginScreen.resx">
       <DependentUpon>LoginScreen.cs</DependentUpon>

@@ -3,7 +3,8 @@ using System.Data;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Windows.Forms;
-using static Client.ClientUtil;
+using static Client.Utility.Core;
+using static Client.Utility.Procedures;
 
 namespace Client
 {
@@ -17,11 +18,10 @@ namespace Client
         private async void loginButton_Click(object sender, EventArgs eventArgs)
         {
             TcpClient client;
-            (string, int) ipAddressTuple;
 
             try
             {
-                var (ip, port) = ipAddressTuple = ParseConnectionArgs(ipTextBox.Text, portTextBox.Text);
+                var (ip, port) = ParseConnectionArgs(ipTextBox.Text, portTextBox.Text);
                 client = new TcpClient(ip, port);
 
                 await HandleLoginProcedure(client.GetStream(), usernameTextBox.Text, passwordTextBox.Text);
@@ -52,7 +52,7 @@ namespace Client
                 return;
             }
 
-            var mainScreen = new MainScreen(client, ipAddressTuple, usernameTextBox.Text);
+            var mainScreen = new MainScreen(client, usernameTextBox.Text);
 
             Hide();
             mainScreen.Closed += (s, args) => Close();
@@ -62,7 +62,7 @@ namespace Client
 
         private void registerButton_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            MessageBox.Show("Not implemented yet, please contact the administrator.", "Whoops");
         }
     }
 }

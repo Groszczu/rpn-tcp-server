@@ -1,31 +1,28 @@
 ﻿using System;
-using System.Data;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Client.ClientUtil;
+using Client.Utility;
+using static Client.Utility.Procedures;
+using ArgumentException = System.ArgumentException;
+using DataException = System.Data.DataException;
 
 namespace Client
 {
     public partial class MainScreen : Form
     {
+        private readonly TcpClient _client;
 
-        private TcpClient _client;
-        private readonly (string, int) _ipAddressTuple;
-
-        public MainScreen(TcpClient client, (string, int) ipAddressTuple, string username)
+        public MainScreen(TcpClient client, string username)
         {
             InitializeComponent();
 
             _client = client;
-            _ipAddressTuple = ipAddressTuple;
 
             Text = $"RPN Calculator - Logged in as \"{username}\"";
-            if (username == "admin") reportViewButton.Visible = true;
+            reportViewButton.Visible = (username == "admin");
         }
 
-        private void rpnTextBox_TextChanged(object sender, EventArgs eventArgs) =>
-            rpnTextBox.ValidateAndColorRpnExpression();
+        private void rpnTextBox_TextChanged(object sender, EventArgs eventArgs) => rpnTextBox.HighlightRpnExpression();
 
         private async void calculateButton_Click(object sender, EventArgs eventArgs)
         {
@@ -45,11 +42,33 @@ namespace Client
 
         private async void historyButton_Click(object sender, EventArgs e)
         {
-            var results = await ProcessHistoryRequest(_client.GetStream());
+            try
+            {
+                var results = await ProcessInformationRequest(_client.GetStream(), Request.History);
 
-            var historyScreen = new HistoryScreen(results);
-            historyScreen.Show();
+                var historyScreen = new ListScreen(results, "Calculation history");
+                historyScreen.Show();
+            }
+            catch (DataException)
+            {
+                MessageBox.Show("You haven't made any calculations yet.", "Info");
+            }
 
+        }
+
+        private async void reportViewButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var results = await ProcessInformationRequest(_client.GetStream(), Request.Reports);
+
+                var reportScreen = new ListScreen(results, "Bug reports");
+                reportScreen.Show();
+            }
+            catch (DataException)
+            {
+                MessageBox.Show("There are no bug reports.", "Info");
+            }
         }
 
         private async void logOutButton_Click(object sender, EventArgs e)
@@ -58,6 +77,22 @@ namespace Client
 
             MessageBox.Show("You have been sucessfully logged out, the app will close now.", "Success");
             Close();
+        }
+
+        private async void sendReportButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await ProcessBugReportRequest(_client.GetStream(), reportTextBox.Text);
+
+                MessageBox.Show("Your report has been submitted. Thank you for your feedback.", "Success");
+
+                reportTextBox.Text = string.Empty;
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Bug report cannot be empty", "Error");
+            }
         }
 
     }

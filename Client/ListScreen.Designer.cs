@@ -1,6 +1,6 @@
 ﻿namespace Client
 {
-    partial class HistoryScreen
+    partial class ListScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -33,15 +33,16 @@
             // 
             // listBox
             // 
+            this.listBox.Font = new System.Drawing.Font("DejaVu Serif Condensed", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listBox.FormattingEnabled = true;
             this.listBox.HorizontalScrollbar = true;
-            this.listBox.ItemHeight = 19;
+            this.listBox.ItemHeight = 15;
             this.listBox.Location = new System.Drawing.Point(12, 12);
             this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(474, 479);
+            this.listBox.Size = new System.Drawing.Size(474, 469);
             this.listBox.TabIndex = 0;
             // 
-            // HistoryScreen
+            // ListScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -53,7 +54,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             this.MaximizeBox = false;
-            this.Name = "HistoryScreen";
+            this.Name = "ListScreen";
             this.Text = "RPN Calculator - Calculation History";
             this.ResumeLayout(false);
 
