@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -89,7 +88,7 @@ namespace RPN_TcpServer
                 case "register":
                     try
                     {
-                        currentUser = _userRepository.Register(username, password);
+                        currentUser = await _userRepository.Register(username, password);
                         break;
                     }
                     catch (InvalidOperationException e)

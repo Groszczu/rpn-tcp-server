@@ -11,7 +11,7 @@ using static BCrypt.Net.BCrypt;
 
 namespace RPN_Database
 {
-    class UserRepository : ContextBasedRepository
+    public class UserRepository : ContextBasedRepository
     {
         private DbSet<User> AllUsers { get => _context.Users; }
 
@@ -19,6 +19,7 @@ namespace RPN_Database
 
         public UserRepository(RpnContext rpnContext) : base(rpnContext)
         {
+            ConnectedUsers = new HashSet<User>();
         }
 
         public User Login(string username, string password)
