@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,15 +10,13 @@ using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
 
-using static BCrypt.Net.BCrypt;
-
 namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private readonly HashSet<User> _connectedUsers;
-        private readonly RpnContext _context;
-        private User _currentUser;
+        private readonly UserRepository _userRepository;
+        private readonly HistoryRepository _historyRepository;
+        private readonly ReportRepository _reportRepository;
 
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
@@ -35,8 +32,10 @@ namespace RPN_TcpServer
                                    Encoding responseEncoding,
                                    ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
         {
-            _connectedUsers = new HashSet<User>();
-            _context = createContext();
+            var context = createContext();
+            _userRepository = new UserRepository(context);
+            _historyRepository = new HistoryRepository(context);
+            _reportRepository = new ReportRepository(context);
         }
 
         public override async Task Start()
@@ -50,7 +49,6 @@ namespace RPN_TcpServer
 
                 var task = ServeClient(tcpClient).ContinueWith(result =>
                 {
-                    _connectedUsers.Remove(_currentUser);
                     _logger("Client disconnected");
                 });
 
@@ -66,37 +64,57 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] { "You are connected", "Please enter user name" });
-            var username = await streamReader.ReadLineAsync();
+            await Send(stream, new[] { "You are connected", "Please authenticate" });
+            var authInput = await streamReader.ReadLineAsync();
 
-            await Send(stream, "Please enter password");
-            var password = await streamReader.ReadLineAsync();
+            var authParams = authInput.Split();
 
-            try
+            if (authParams.Length != 3)
             {
-                _currentUser = _context.Users.First(u => u.Username == username);
+                await Send(stream, "Invalid authentication message format");
 
-                if (_connectedUsers.Contains(_currentUser))
-                {
-                    await Send(stream, "User is already connected");
-                    CloseStreams(streamReader);
-                    return;
-                }
-                if (!EnhancedVerify(password, _currentUser.Password))
-                {
-                    await Send(stream, "Invalid password");
-                    CloseStreams(streamReader);
-                    return;
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                await Send(stream, "User doesn't exist");
                 CloseStreams(streamReader);
                 return;
             }
 
-            _connectedUsers.Add(_currentUser);
+            var authOperationType = authParams[0];
+            var username = authParams[1];
+            var password = authParams[2];
+
+            User currentUser;
+
+            switch (authOperationType)
+            {
+                case "register":
+                    try
+                    {
+                        currentUser = await _userRepository.Register(username, password);
+                        break;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        await Send(stream, e.Message);
+                        CloseStreams(streamReader);
+                        return;
+                    }
+                case "login":
+                    try
+                    {
+                        currentUser = _userRepository.Login(username, password);
+                        break;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        await Send(stream, e.Message);
+                        CloseStreams(streamReader);
+                        return;
+                    }
+                default:
+                    await Send(stream, "Invalid authentication message format");
+
+                    CloseStreams(streamReader);
+                    return;
+            }
 
             while (true)
             {
@@ -109,18 +127,18 @@ namespace RPN_TcpServer
                 catch (Exception)
                 {
                     CloseStreams(streamReader);
-                    return;
+                    break;
                 }
 
                 if (input == "history")
                 {
-                    if (_currentUser.Username == "admin")
+                    if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _context.History);
+                        await Send(stream, _historyRepository.All);
                     }
                     else
                     {
-                        await Send(stream, _context.History.Where(h => h.UserId == _currentUser.Id));
+                        await Send(stream, _historyRepository.ById(currentUser.Id));
                     }
                 }
                 else if (Regex.IsMatch(input, @"^report\s.*"))
@@ -128,14 +146,13 @@ namespace RPN_TcpServer
                     var match = Regex.Match(input, @"^report\s(?<message>.*)");
                     var message = match.Groups["message"].Value;
 
-                    _context.Reports.Add(new Report { Message = message, User = _currentUser });
-                    await _context.SaveChangesAsync();
+                    await _reportRepository.Add(currentUser, message);
                 }
                 else if (input == "get reports")
                 {
-                    if (_currentUser.Username == "admin")
+                    if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _context.Reports);
+                        await Send(stream, _reportRepository.All);
                     }
                     else
                     {
@@ -152,14 +169,8 @@ namespace RPN_TcpServer
                     {
                         var result = _transformer(input).ToString();
 
-                        _context.History.Add(new History
-                        {
-                            Expression = input,
-                            Result = result,
-                            User = _currentUser
-                        });
+                        await _historyRepository.Add(currentUser, input, result);
 
-                        await _context.SaveChangesAsync();
                         await Send(stream, result);
                     }
                     catch (Exception e)
@@ -170,6 +181,7 @@ namespace RPN_TcpServer
             }
 
             CloseStreams(streamReader);
+            _userRepository.Logout(currentUser);
         }
 
         private Task Send(NetworkStream stream, IEnumerable<object> models)
