@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\bk\AppData\Local\JetBrains\Rider2020.2\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\bk\AppData\Local\JetBrains\Rider2020.2\resharper-host\Local\Transient\Rider\v202\SolutionCaches\_RPN_TcpServer.-1134606407.00" t="ExcludeRecursive" />
+    <e p="C:\Users\bk\Desktop\rpn-tcp-server" t="IncludeFlat">
+      <e p="Application" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="Application.csproj" t="IncludeRecursive" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="Program.cs" t="Include" />
+      </e>
+      <e p="Client" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Client.csproj" t="IncludeRecursive" />
+        <e p="Exceptions" t="Include">
+          <e p="ServerDownException.cs" t="Include" />
+        </e>
+        <e p="ListScreen.cs" t="Include" />
+        <e p="ListScreen.Designer.cs" t="Include" />
+        <e p="ListScreen.resx" t="Include" />
+        <e p="LoginScreen.cs" t="Include" />
+        <e p="LoginScreen.Designer.cs" t="Include" />
+        <e p="LoginScreen.resx" t="Include" />
+        <e p="MainScreen.cs" t="Include" />
+        <e p="MainScreen.Designer.cs" t="Include" />
+        <e p="MainScreen.resx" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+        <e p="Utility" t="Include">
+          <e p="Core.cs" t="Include" />
+          <e p="Procedures.cs" t="Include" />
+          <e p="Request.cs" t="Include" />
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="RPN_Calculator" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="RPN_Calculator.csproj" t="IncludeRecursive" />
+        <e p="RPNCalculator.cs" t="Include" />
+      </e>
+      <e p="RPN_Database" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ContextBasedRepository.cs" t="Include" />
+        <e p="ContextBuilder.cs" t="Include" />
+        <e p="ContextCreator.cs" t="Include" />
+        <e p="HistoryRepository.cs" t="Include" />
+        <e p="Model" t="Include">
+          <e p="History.cs" t="Include" />
+          <e p="Report.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.0" t="Include">
+              <e p="RPN_Database.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="ReportRepository.cs" t="Include" />
+        <e p="RPN_Database.csproj" t="IncludeRecursive" />
+        <e p="RPNContext.cs" t="Include" />
+        <e p="UserRepository.cs" t="Include" />
+      </e>
+      <e p="RPN_TcpServer" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="ResponseServer.cs" t="Include" />
+        <e p="ResponseServerAsync.cs" t="Include" />
+        <e p="ResponseTransformer.cs" t="Include" />
+        <e p="RPN_TcpServer.csproj" t="IncludeRecursive" />
+      </e>
+      <e p="RPN_TcpServer.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>
