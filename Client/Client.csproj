@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Utility\AuthProcedure.cs" />
     <Compile Include="Utility\Core.cs" />
     <Compile Include="Exceptions\ServerDownException.cs" />
     <Compile Include="ListScreen.cs">
@@ -101,6 +102,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RPN_Locale\RPN_Locale.csproj">
+      <Project>{f1d64065-2f62-4a0d-9fdd-ca4d79b6b537}</Project>
+      <Name>RPN_Locale</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

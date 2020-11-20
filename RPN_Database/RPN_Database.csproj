@@ -11,4 +11,8 @@
     <PackageReference Include="System.Data.SQLite.Linq" Version="1.0.103" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RPN_Locale\RPN_Locale.csproj" />
+  </ItemGroup>
+
 </Project>
