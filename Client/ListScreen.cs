@@ -10,12 +10,13 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class HistoryScreen : Form
+    public partial class ListScreen : Form
     {
-        public HistoryScreen(List<string> elements)
+        public ListScreen(List<string> elements, string title)
         {
             InitializeComponent();
 
+            Text = $"RPN Calculator - {title}";
             listBox.Items.AddRange(elements.ToArray());
         }
     }

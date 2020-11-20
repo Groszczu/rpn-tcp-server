@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RPN_Calculator
@@ -37,7 +38,8 @@ namespace RPN_Calculator
 
             Array.ForEach(input?.Split(' ') ?? throw new ArgumentException("empty input"), n =>
             {
-                if (double.TryParse(n, out double num)) //TODO doubles not working
+
+                if (double.TryParse(n, NumberStyles.Any, CultureInfo.InvariantCulture,  out var num))
                 {
                     valuesStack.Push(num);
                 }

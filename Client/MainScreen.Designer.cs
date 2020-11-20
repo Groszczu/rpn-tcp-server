@@ -96,6 +96,7 @@
             this.sendReportButton.TabIndex = 5;
             this.sendReportButton.Text = "Report";
             this.sendReportButton.UseVisualStyleBackColor = true;
+            this.sendReportButton.Click += new System.EventHandler(this.sendReportButton_Click);
             // 
             // rpnResultTextBox
             // 
@@ -143,6 +144,7 @@
             this.reportViewButton.Text = "View bug reports";
             this.reportViewButton.UseVisualStyleBackColor = true;
             this.reportViewButton.Visible = false;
+            this.reportViewButton.Click += new System.EventHandler(this.reportViewButton_Click);
             // 
             // MainScreen
             // 
@@ -162,6 +164,7 @@
             this.Controls.Add(this.rpnTextBox);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             this.MaximizeBox = false;
             this.Name = "MainScreen";
