@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using RPN_Calculator;
 using RPN_Database;
-using RPN_TcpServer;
 
 namespace RPN_TcpServer
 {
@@ -12,8 +11,6 @@ namespace RPN_TcpServer
     {
         public static async Task Main(string[] args)
         {
-            try
-            {
             var (ipAddress, port) = args.Length == 0
                 ? (IPAddress.Loopback, 1024)
                 : TryParseConnectionArgs(args);
@@ -25,23 +22,10 @@ namespace RPN_TcpServer
             }
 
             Console.WriteLine(ipAddress.ToString());
-            
-            
-                ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext);
-                await rpnServer.Start();
-            }
-            catch (DivideByZeroException e)
-            {
-                Console.WriteLine(e);
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                Console.WriteLine(e);
-            }
-            catch(ArgumentException e)
-            {
-                Console.WriteLine(e);
-            }
+
+
+            ResponseServer<double> rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext);
+            await rpnServer.Start();
         }
 
         /// <summary>

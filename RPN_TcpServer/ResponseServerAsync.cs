@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -164,7 +163,7 @@ namespace RPN_TcpServer
                     }
                     catch (Exception e)
                     {
-                        await Send(stream, e.Message);
+                        await Send(stream, $"Calculation error: {e.Message}");
                     }
                 }
             }
