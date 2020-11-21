@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -95,7 +96,7 @@ namespace Client.Utility
             _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
             _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
 
-            if (!double.TryParse(result, out _))
+            if (!double.TryParse(result, NumberStyles.Any, CultureInfo.InvariantCulture,  out _))
                 throw new DataException("returned result is non a number");
 
             return result;
