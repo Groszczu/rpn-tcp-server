@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RPN_Calculator
@@ -15,13 +16,11 @@ namespace RPN_Calculator
             { "+", (a, b) => a + b },
             { "*", (a, b) => a * b },
             { "/", (a, b) => a / b },
-            { "^", (a, b) => (double)Math.Pow(a, b) },
+            { "^", (a, b) => Math.Pow(a, b) },
             { "%", (a, b) => a % b},
-            { "root", (a, b) => (double)Math.Pow(b, 1.0 / a)},
-            { "log", (a, b) => (double)Math.Log(b, a)},
+            { "root", (a, b) => Math.Pow(b, 1.0 / a)},
+            { "log", (a, b) => Math.Log(b, a)},
         };
-
-        private const string InvalidInputMessage = "Input is not a valid RPN";
 
         /// <summary>
         /// Function that returns result of RPN input
@@ -30,25 +29,17 @@ namespace RPN_Calculator
         /// </summary>
         /// <param name="input">RPN expression</param>
         /// <returns>result of RPN expression</returns>
-        public static double Calculate(string input)
-        {
-            try
-            {
-                return GetResult(input);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException($"{InvalidInputMessage}. Input: {input}");
-            }
-        }
-
-        private static double GetResult(string input)
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="DivideByZeroException"></exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
+        public static double GetResult(string input)
         {
             var valuesStack = new Stack<double>();
-          
-            Array.ForEach(input?.Split(' '), n =>
+
+            Array.ForEach(input?.Split(' ') ?? throw new ArgumentException("empty input"), n =>
             {
-                if (double.TryParse(n, out var num))
+
+                if (double.TryParse(n, NumberStyles.Any, CultureInfo.InvariantCulture,  out var num))
                 {
                     valuesStack.Push(num);
                 }
@@ -59,13 +50,17 @@ namespace RPN_Calculator
                     var arg2 = valuesStack.Pop();
                     var arg1 = valuesStack.Pop();
                     var result = func(arg1, arg2);
+
+                    if (double.IsNegativeInfinity(result) || double.IsPositiveInfinity(result))
+                        throw new DivideByZeroException("something was divided by zero");
+
                     valuesStack.Push(result);
                 }
             });
 
             if (valuesStack.Count() != 1)
             {
-                throw new ArgumentException(InvalidInputMessage);
+                throw new IndexOutOfRangeException("input is not a valid RPN");
             }
 
             return valuesStack.Pop();

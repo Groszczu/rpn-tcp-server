@@ -8,7 +8,6 @@ namespace RPN_Database
 {
     public static class ContextBuilder
     {
-        #region Methods
         /// <summary>
         /// Metoda zapewniająca utworzenie bazy danych i kontekstu do pobierania danych.
         /// </summary>
@@ -65,6 +64,5 @@ namespace RPN_Database
 
             return new RpnContext();
         }
-        #endregion
     }
 }

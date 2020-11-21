@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -10,15 +9,16 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
-
-using static BCrypt.Net.BCrypt;
+using RPN_Database.Repository;
+using RPN_Locale;
 
 namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private readonly HashSet<User> _connectedUsers;
-        private readonly RpnContext _context;
+        private readonly UserRepository _userRepository;
+        private readonly HistoryRepository _historyRepository;
+        private readonly ReportRepository _reportRepository;
 
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
@@ -34,8 +34,10 @@ namespace RPN_TcpServer
                                    Encoding responseEncoding,
                                    ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
         {
-            _connectedUsers = new HashSet<User>();
-            _context = createContext();
+            var context = createContext();
+            _userRepository = new UserRepository(context);
+            _historyRepository = new HistoryRepository(context);
+            _reportRepository = new ReportRepository(context);
         }
 
         public override async Task Start()
@@ -47,7 +49,11 @@ namespace RPN_TcpServer
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
 
-                var task = ServeClient(tcpClient).ContinueWith(result => _logger("Client disconnected"));
+                var task = ServeClient(tcpClient).ContinueWith(result =>
+                {
+                    _logger("Client disconnected");
+                });
+
                 if (task.IsFaulted)
                 {
                     await task;
@@ -60,39 +66,57 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] { "You are connected", "Please enter user name" });
-            var username = await streamReader.ReadLineAsync();
+            await Send(stream, new[] { "You are connected", "Please authenticate" });
+            var authInput = await streamReader.ReadLineAsync();
 
-            await Send(stream, "Please enter password");
-            var password = await streamReader.ReadLineAsync();
+            var authParams = authInput.Split();
 
-            User user;
-
-            try
+            if (authParams.Length != 3)
             {
-                user = _context.Users.First(u => u.Username == username);
+                await Send(stream, "Invalid authentication message format");
 
-                if (_connectedUsers.Contains(user))
-                {
-                    await Send(stream, "User is already connected");
-                    CloseStreams(streamReader);
-                    return;
-                }
-                if (!EnhancedVerify(password, user.Password))
-                {
-                    await Send(stream, "Invalid password");
-                    CloseStreams(streamReader);
-                    return;
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                await Send(stream, "User doesn't exist");
                 CloseStreams(streamReader);
                 return;
             }
 
-            _connectedUsers.Add(user);
+            var authOperationType = authParams[0];
+            var username = authParams[1];
+            var password = authParams[2];
+
+            User currentUser;
+
+            switch (authOperationType)
+            {
+                case CoreLocale.Register:
+                    try
+                    {
+                        currentUser = await _userRepository.Register(username, password);
+                        break;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        await Send(stream, e.Message);
+                        CloseStreams(streamReader);
+                        return;
+                    }
+                case CoreLocale.Login:
+                    try
+                    {
+                        currentUser = _userRepository.Login(username, password);
+                        break;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        await Send(stream, e.Message);
+                        CloseStreams(streamReader);
+                        return;
+                    }
+                default:
+                    await Send(stream, "Invalid authentication message format");
+
+                    CloseStreams(streamReader);
+                    return;
+            }
 
             while (true)
             {
@@ -105,40 +129,39 @@ namespace RPN_TcpServer
                 catch (Exception)
                 {
                     CloseStreams(streamReader);
-                    return;
+                    break;
                 }
 
-                if (input == "history")
+                if (input == CoreLocale.History)
                 {
-                    if (user.Username == "admin")
+                    if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _context.History);
+                        await Send(stream, _historyRepository.All);
                     }
                     else
                     {
-                        await Send(stream, _context.History.Where(h => h.UserId == user.Id));
+                        await Send(stream, _historyRepository.ById(currentUser.Id));
                     }
                 }
-                else if (Regex.IsMatch(input, @"^report\s.*"))
+                else if (Regex.IsMatch(input, RegularExpression.Report))
                 {
-                    var match = Regex.Match(input, @"^report\s(?<message>.*)");
-                    var message = match.Groups["message"].Value;
+                    var match = Regex.Match(input, RegularExpression.ReportWithGroup);
+                    var message = match.Groups[RegularExpression.ReportGroup].Value;
 
-                    _context.Reports.Add(new Report { Message = message, User = user });
-                    await _context.SaveChangesAsync();
+                    await _reportRepository.Add(currentUser, message);
                 }
-                else if (input == "get reports")
+                else if (input == CoreLocale.GetReports)
                 {
-                    if (user.Username == "admin")
+                    if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _context.Reports);
+                        await Send(stream, _reportRepository.All);
                     }
                     else
                     {
                         await Send(stream, "Not authorized");
                     }
                 }
-                else if (input == "exit")
+                else if (input == CoreLocale.Exit)
                 {
                     break;
                 }
@@ -148,25 +171,19 @@ namespace RPN_TcpServer
                     {
                         var result = _transformer(input).ToString();
 
-                        _context.History.Add(new History
-                        {
-                            Expression = input,
-                            Result = result,
-                            User = user
-                        });
+                        await _historyRepository.Add(currentUser, input, result);
 
-                        await _context.SaveChangesAsync();
                         await Send(stream, result);
                     }
                     catch (Exception e)
                     {
-                        await Send(stream, e.Message);
+                        await Send(stream, $"Calculation error: {e.Message}");
                     }
                 }
             }
 
             CloseStreams(streamReader);
-            _connectedUsers.Remove(user);
+            _userRepository.Logout(currentUser);
         }
 
         private Task Send(NetworkStream stream, IEnumerable<object> models)
@@ -175,12 +192,12 @@ namespace RPN_TcpServer
         }
         private Task Send(NetworkStream stream, IEnumerable<string> lines)
         {
-            return Send(stream, string.Join("\n\r", lines));
+            return Send(stream, string.Join("\r\n", lines));
         }
 
         private Task Send(NetworkStream stream, string message)
         {
-            var messageLine = $"{message}\n\r";
+            var messageLine = $"{message}\r\n";
             return stream.WriteAsync(_encoding.GetBytes(messageLine), 0, messageLine.Length);
         }
 
