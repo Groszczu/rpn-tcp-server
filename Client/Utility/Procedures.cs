@@ -8,24 +8,28 @@ using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Client.Exceptions;
-
+using RPN_Locale;
 using static Client.Utility.Core;
 
 namespace Client.Utility
 {
     public static class Procedures
     {
-        public static string HistoryRegex { get; } = @"^History{.*}$";
-        public static string ReportRegex { get; } = @"^Report{.*}$";
-
         /// <summary>
-        /// Obsługuje naciśnięcie przycisku logowania.
+        /// Obsługuje naciśnięcie przycisku logowania lub rejestracji.
         /// </summary>
+        /// <param name="stream">Strumień</param>
+        /// <param name="authProcedure">Rodzaj operacji</param>
+        /// <param name="username">Nazwa użytkownika</param>
+        /// <param name="password">Wprowadzone hasło</param>
         /// <exception cref="ServerDownException">Gdy serwer przestał odpowiadać.</exception>
         /// <exception cref="DuplicateNameException">Gdy użytkownik jest już zalogowany.</exception>
         /// <exception cref="ServerDownException">Gdy dane użytkownika nie istnieją w bazie danych serwera.</exception>
         /// <exception cref="ArgumentException">Gdy dane użytkownika są puste.</exception>
-        public static async Task HandleLoginProcedure(NetworkStream stream, string username, string password)
+        public static async Task HandleAuthenticationProcedure(NetworkStream stream,
+                                                               AuthProcedure authProcedure,
+                                                               string username,
+                                                               string password)
         {
             var streamReader = new StreamReader(stream);
 
@@ -33,24 +37,35 @@ namespace Client.Utility
                 throw new ArgumentNullException("fields cannot be blank");
 
             _ = await streamReader.ReadLineAsync(); //You are connected
-            _ = await streamReader.ReadLineAsync(); //Please enter username
+            _ = await streamReader.ReadLineAsync(); //Please authenticate
 
-            await SendToStreamAsync(stream, username);
-
-            _ = await streamReader.ReadLineAsync(); //Please enter password
-
-            await SendToStreamAsync(stream, password);
+            var procedure = string.Empty;
+            
+            switch (authProcedure)
+            {
+                case AuthProcedure.Login:
+                    procedure = CoreLocale.Login;
+                    break;
+                case AuthProcedure.Register:
+                    procedure = CoreLocale.Register;
+                    break;
+            }
+            
+            await SendToStreamAsync(stream, $"{procedure} {username} {password}");
 
             var message = await streamReader.ReadLineAsync(); //Enter RPN Expression / Error
 
-            if (message == "User is already connected")
-                throw new DuplicateNameException(message);
-
-            if (message == "User doesn't exist")
-                throw new InvalidCredentialException(message);
-
-            if (message == "Invalid password")
-                throw new InvalidCredentialException(message);
+            switch (message)
+            {
+                case CoreLocale.UserLoggedIn:
+                    throw new DuplicateNameException(message);
+                case CoreLocale.UsernameTaken:
+                    throw new DuplicateNameException(message);
+                case CoreLocale.NoSuchUsername:
+                    throw new InvalidCredentialException(message);
+                case CoreLocale.InvalidPassword:
+                    throw new InvalidCredentialException(message);
+            }
 
             _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
             _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
@@ -103,17 +118,17 @@ namespace Client.Utility
             switch (request)
             {
                 case Request.History:
-                    {
-                        expression = "history";
-                        regex = HistoryRegex;
-                        break;
-                    }
+                {
+                    expression = CoreLocale.History;
+                    regex = RegularExpression.HistoryString;
+                    break;
+                }
                 case Request.Reports:
-                    {
-                        expression = "get reports";
-                        regex = ReportRegex;
-                        break;
-                    }
+                {
+                    expression = CoreLocale.GetReports;
+                    regex = RegularExpression.ReportString;
+                    break;
+                }
             }
 
             await SendToStreamAsync(stream, expression);
@@ -141,7 +156,7 @@ namespace Client.Utility
         /// <param name="stream">Strumień.</param>
         public static async Task ProcessDisconnectRequest(NetworkStream stream)
         {
-            await SendToStreamAsync(stream, "exit");
+            await SendToStreamAsync(stream, CoreLocale.Exit);
         }
 
         /// <summary>
@@ -155,7 +170,7 @@ namespace Client.Utility
 
             if (string.IsNullOrWhiteSpace(report)) throw new ArgumentException("report is null or blank");
 
-            await SendToStreamAsync(stream, $"report {report}");
+            await SendToStreamAsync(stream, $"{CoreLocale.Report} {report}");
 
             _ = await streamReader.ReadLineAsync(); //Enter RPN Expression
             _ = await streamReader.ReadLineAsync(); //'history' to check last inputs

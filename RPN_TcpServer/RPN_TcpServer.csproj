@@ -73,6 +73,10 @@
       <Project>{A541AD68-E871-4C36-B0D2-8E3D621C0ED7}</Project>
       <Name>RPN_Database</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RPN_Locale\RPN_Locale.csproj">
+      <Project>{f1d64065-2f62-4a0d-9fdd-ca4d79b6b537}</Project>
+      <Name>RPN_Locale</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

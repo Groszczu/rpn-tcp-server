@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using RPN_Database.Model;
 
-namespace RPN_Database
+namespace RPN_Database.Repository
 {
     public class ReportRepository : ContextBasedRepository
     {
-        private DbSet<Report> Reports { get => _context.Reports; }
+        private DbSet<Report> Reports => _context.Reports;
 
         public IEnumerable<Report> All => Reports.ToList();
 

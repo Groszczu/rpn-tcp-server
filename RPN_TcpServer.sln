@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_TcpServer", "RPN_TcpSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{CC80DBFF-4941-49A9-820D-0D024D6E7868}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_Locale", "RPN_Locale\RPN_Locale.csproj", "{F1D64065-2F62-4A0D-9FDD-CA4D79B6B537}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPN_Tests", "RPN_Tests\RPN_Tests.csproj", "{A0EC5B87-687A-4073-86AE-3FC21B00C0EA}"
 EndProject
 Global

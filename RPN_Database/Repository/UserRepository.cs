@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using RPN_Database;
 using RPN_Database.Model;
-
 using static BCrypt.Net.BCrypt;
+using RPN_Locale;
 
-namespace RPN_Database
+namespace RPN_Database.Repository
 {
     public class UserRepository : ContextBasedRepository
     {
-        private DbSet<User> AllUsers { get => _context.Users; }
+        private DbSet<User> Users => _context.Users;
 
         public HashSet<User> ConnectedUsers { get; }
 
@@ -24,21 +22,21 @@ namespace RPN_Database
 
         public User Login(string username, string password)
         {
-            var user = AllUsers.FirstOrDefault(u => u.Username == username);
+            var user = Users.FirstOrDefault(u => u.Username == username);
 
             if (user == null)
             {
-                throw new InvalidOperationException("User with given username doesn't exist");
+                throw new InvalidOperationException(CoreLocale.NoSuchUsername);
             }
 
             if (!EnhancedVerify(password, user.Password))
             {
-                throw new InvalidOperationException("Invalid password provided");
+                throw new InvalidOperationException(CoreLocale.InvalidPassword);
             }
 
             if (ConnectedUsers.Contains(user))
             {
-                throw new InvalidOperationException("User already logged in");
+                throw new InvalidOperationException(CoreLocale.UserLoggedIn);
             }
 
             ConnectedUsers.Add(user);
@@ -48,14 +46,14 @@ namespace RPN_Database
 
         public async Task<User> Register(string username, string password)
         {
-            var user = AllUsers.FirstOrDefault(u => u.Username == username);
+            var user = Users.FirstOrDefault(u => u.Username == username);
 
-            if(user != null)
+            if (user != null)
             {
-                throw new InvalidOperationException("Username taken");
+                throw new InvalidOperationException(CoreLocale.UsernameTaken);
             }
 
-            AllUsers.Add(new User()
+            Users.Add(new User()
             {
                 Created = DateTime.Now,
                 Username = username,
@@ -67,7 +65,7 @@ namespace RPN_Database
             return Login(username, password);
         }
 
-        public void Logout (User user)
+        public void Logout(User user)
         {
             ConnectedUsers.Remove(user);
         }

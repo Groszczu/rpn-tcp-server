@@ -6,15 +6,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RPN_Locale;
 using Exception = System.Exception;
 
 namespace Client.Utility
 {
     public static class Core
     {
-        public static int MinPort { get; } = 1024;
-        public static int MaxPort { get; } = 65535;
-        public static string RpnRegex { get; } = @"^(\d*\.?\d*)( (\d*\.?\d*) ([\+\-\*\/^%]|root|log))+$";
+        private static int MinPort => 1024;
+        private static int MaxPort => 65535;
 
         /// <summary>
         /// Metoda sprawdzająca poprawność adresu IP i portu i zwracająca go jeśli jest on poprawny.
@@ -64,7 +64,7 @@ namespace Client.Utility
         /// Sprawdza czy podane wyrażenie RPN jest poprawne składniowo.
         /// </summary>
         /// <param name="expression">Wyrażenie do sprawdzenia.</param>
-        public static bool IsValidRpn(string expression) => Regex.IsMatch(expression, RpnRegex);
+        public static bool IsValidRpn(string expression) => Regex.IsMatch(expression, RegularExpression.Rpn);
 
         /// <summary>
         /// Funkcja rozszerzająca umożliwiająca kolorowanie składni wyrażenia RPN wewnątrz RichTextBox'a.

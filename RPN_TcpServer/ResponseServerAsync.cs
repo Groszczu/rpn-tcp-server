@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RPN_Database;
 using RPN_Database.Model;
+using RPN_Database.Repository;
+using RPN_Locale;
 
 namespace RPN_TcpServer
 {
@@ -85,7 +87,7 @@ namespace RPN_TcpServer
 
             switch (authOperationType)
             {
-                case "register":
+                case CoreLocale.Register:
                     try
                     {
                         currentUser = await _userRepository.Register(username, password);
@@ -97,7 +99,7 @@ namespace RPN_TcpServer
                         CloseStreams(streamReader);
                         return;
                     }
-                case "login":
+                case CoreLocale.Login:
                     try
                     {
                         currentUser = _userRepository.Login(username, password);
@@ -130,7 +132,7 @@ namespace RPN_TcpServer
                     break;
                 }
 
-                if (input == "history")
+                if (input == CoreLocale.History)
                 {
                     if (currentUser.Username == "admin")
                     {
@@ -141,14 +143,14 @@ namespace RPN_TcpServer
                         await Send(stream, _historyRepository.ById(currentUser.Id));
                     }
                 }
-                else if (Regex.IsMatch(input, @"^report\s.*"))
+                else if (Regex.IsMatch(input, RegularExpression.Report))
                 {
-                    var match = Regex.Match(input, @"^report\s(?<message>.*)");
-                    var message = match.Groups["message"].Value;
+                    var match = Regex.Match(input, RegularExpression.ReportWithGroup);
+                    var message = match.Groups[RegularExpression.ReportGroup].Value;
 
                     await _reportRepository.Add(currentUser, message);
                 }
-                else if (input == "get reports")
+                else if (input == CoreLocale.GetReports)
                 {
                     if (currentUser.Username == "admin")
                     {
@@ -159,7 +161,7 @@ namespace RPN_TcpServer
                         await Send(stream, "Not authorized");
                     }
                 }
-                else if (input == "exit")
+                else if (input == CoreLocale.Exit)
                 {
                     break;
                 }

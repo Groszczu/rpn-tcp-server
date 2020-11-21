@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace RPN_Database
+namespace RPN_Database.Repository
 {
     public abstract class ContextBasedRepository
     {
