@@ -175,7 +175,7 @@ namespace RPN_TcpServer
                     }
                     catch (Exception e)
                     {
-                        await Send(stream, e.Message);
+                        await Send(stream, $"Calculation error: {e.Message}");
                     }
                 }
             }
