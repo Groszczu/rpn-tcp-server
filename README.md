@@ -12,6 +12,18 @@ Tcp server and client application that allow the users to:
 
 Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 
+#### Use case diagram
+
+<p align="center">
+  <img src="/media/DiagramPrzypadkow.jpg">
+</p>
+
+#### Class diagram
+
+<p align="center">
+  <img src="/media/DiagramKlas.png">
+</p>
+
 #### Client screenshots
 
 <p align="center">
