@@ -15,7 +15,7 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 #### Class diagram
 
 <p align="center">
-  <img src="/media/DiagramKlas.PNG">
+  <img src="/media/DiagramKlas.png">
 </p>
 
 #### Client screenshots
