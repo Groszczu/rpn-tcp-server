@@ -65,6 +65,24 @@ namespace RPN_Database.Repository
             return Login(username, password);
         }
 
+        public async Task<User> ChangePassword(string username, string password, string newpassword)
+        {
+            try
+            {
+                var user = Login(username, password);
+
+                user.Password = newpassword;
+                
+                await SaveChanges();
+
+                return user;
+            }
+            catch
+            {
+                throw new InvalidOperationException("User does not exist");
+            }
+        }
+
         public void Logout(User user)
         {
             ConnectedUsers.Remove(user);

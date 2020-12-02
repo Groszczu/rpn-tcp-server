@@ -4,6 +4,7 @@
     {
         public const string Login = "login";
         public const string Register = "register";
+        public const string ChangePassword = "chpwd";
         public const string History = "history";
         public const string Report = "report";
         public const string GetReports = "get reports";

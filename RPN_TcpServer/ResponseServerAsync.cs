@@ -82,6 +82,7 @@ namespace RPN_TcpServer
             var authOperationType = authParams[0];
             var username = authParams[1];
             var password = authParams[2];
+            var newpassword = authParams[3];
 
             User currentUser;
 
@@ -103,6 +104,18 @@ namespace RPN_TcpServer
                     try
                     {
                         currentUser = _userRepository.Login(username, password);
+                        break;
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        await Send(stream, e.Message);
+                        CloseStreams(streamReader);
+                        return;
+                    }
+                case CoreLocale.ChangePassword:
+                    try
+                    {
+                        currentUser = await _userRepository.ChangePassword(username, password, newpassword);
                         break;
                     }
                     catch (InvalidOperationException e)
