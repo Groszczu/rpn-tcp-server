@@ -70,11 +70,9 @@ namespace RPN_Database.Repository
             try
             {
                 var user = Login(username, password);
-
-                user.Password = newpassword;
+                user.Password = EnhancedHashPassword(newpassword);
                 
                 await SaveChanges();
-
                 return user;
             }
             catch
