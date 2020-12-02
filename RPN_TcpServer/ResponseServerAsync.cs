@@ -29,10 +29,10 @@ namespace RPN_TcpServer
         /// <param name="responseEncoding">Enkodowanie wykorzystywane do przeprowadzania komunikacji.</param>
         /// <param name="createContext">Funkcja tworząca kontekst bazy danych kalkulatora RPN.</param>
         public ResponseServerAsync(IPAddress localAddress,
-                                   int port,
-                                   ResponseTransformer<double> transformer,
-                                   Encoding responseEncoding,
-                                   ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
+            int port,
+            ResponseTransformer<double> transformer,
+            Encoding responseEncoding,
+            ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
         {
             var context = createContext();
             _userRepository = new UserRepository(context);
@@ -49,10 +49,7 @@ namespace RPN_TcpServer
                 var tcpClient = await _server.AcceptTcpClientAsync();
                 _logger("Client connected");
 
-                var task = ServeClient(tcpClient).ContinueWith(result =>
-                {
-                    _logger("Client disconnected");
-                });
+                var task = ServeClient(tcpClient).ContinueWith(result => { _logger("Client disconnected"); });
 
                 if (task.IsFaulted)
                 {
@@ -66,23 +63,32 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] { "You are connected", "Please authenticate" });
+            await Send(stream, new[] {"You are connected", "Please authenticate"});
             var authInput = await streamReader.ReadLineAsync();
+
+            string authOperationType, username, password, newPassword = string.Empty;
 
             var authParams = authInput.Split();
 
-            if (authParams.Length != 3)
+            switch (authParams.Length)
             {
-                await Send(stream, "Invalid authentication message format");
+                case 3:
+                    authOperationType = authParams[0];
+                    username = authParams[1];
+                    password = authParams[2];
+                    break;
+                case 4:
+                    authOperationType = authParams[0];
+                    username = authParams[1];
+                    password = authParams[2];
+                    newPassword = authParams[3];
+                    break;
+                default:
+                    await Send(stream, "Invalid authentication message format");
 
-                CloseStreams(streamReader);
-                return;
+                    CloseStreams(streamReader);
+                    return;
             }
-
-            var authOperationType = authParams[0];
-            var username = authParams[1];
-            var password = authParams[2];
-            var newpassword = authParams[3];
 
             User currentUser;
 
@@ -115,7 +121,8 @@ namespace RPN_TcpServer
                 case CoreLocale.ChangePassword:
                     try
                     {
-                        currentUser = await _userRepository.ChangePassword(username, password, newpassword);
+                        currentUser = await _userRepository.ChangePassword(username, password, newPassword);
+                        await Send(stream, $"Password for user {username} has been changed");
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -136,7 +143,12 @@ namespace RPN_TcpServer
                 string input;
                 try
                 {
-                    await Send(stream, new[] { "Enter RPN expression", "'history' to check last inputs", "'exit' to disconnect", "'report <message>' to report a problem" });
+                    await Send(stream,
+                        new[]
+                        {
+                            "Enter RPN expression", "'history' to check last inputs", "'exit' to disconnect",
+                            "'report <message>' to report a problem"
+                        });
                     input = await streamReader.ReadLineAsync();
                 }
                 catch (Exception)
@@ -203,6 +215,7 @@ namespace RPN_TcpServer
         {
             return Send(stream, models.Select(m => m.ToString()));
         }
+
         private Task Send(NetworkStream stream, IEnumerable<string> lines)
         {
             return Send(stream, string.Join("\r\n", lines));
