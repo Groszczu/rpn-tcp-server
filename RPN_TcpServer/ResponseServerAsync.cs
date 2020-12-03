@@ -153,6 +153,7 @@ namespace RPN_TcpServer
                 }
                 catch (Exception)
                 {
+                    _userRepository.Logout(currentUser);
                     CloseStreams(streamReader);
                     break;
                 }
@@ -207,8 +208,8 @@ namespace RPN_TcpServer
                 }
             }
 
-            CloseStreams(streamReader);
             _userRepository.Logout(currentUser);
+            CloseStreams(streamReader);
         }
 
         private Task Send(NetworkStream stream, IEnumerable<object> models)

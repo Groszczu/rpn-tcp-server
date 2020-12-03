@@ -40,8 +40,8 @@ namespace Client.Utility
             _ = await streamReader.ReadLineAsync(); //You are connected
             _ = await streamReader.ReadLineAsync(); //Please authenticate
 
-            var procedure = string.Empty;
-            
+            string procedure = string.Empty, request = null;
+
             switch (authProcedure)
             {
                 case AuthProcedure.Login:
@@ -51,11 +51,12 @@ namespace Client.Utility
                     procedure = CoreLocale.Register;
                     break;
                 case AuthProcedure.ChangePassword:
-                    //TODO chpwd
+                    procedure = CoreLocale.ChangePassword;
+                    request = $"{procedure} {username} {password} {newPassword}";
                     break;
             }
             
-            await SendToStreamAsync(stream, $"{procedure} {username} {password}");
+            await SendToStreamAsync(stream, request ?? $"{procedure} {username} {password}");
 
             var message = await streamReader.ReadLineAsync(); //Enter RPN Expression / Error
 

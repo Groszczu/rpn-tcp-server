@@ -36,7 +36,7 @@ namespace Client
             }
             catch (DataException)
             {
-                MessageBox.Show("Server didn't respond properly. If the problem persists, contact an administrator.");
+                MessageBox.Show("Server didn't respond properly.\nAre you sure your expression is correct?\nIf the problem persists, contact an administrator.");
             }
         }
 
