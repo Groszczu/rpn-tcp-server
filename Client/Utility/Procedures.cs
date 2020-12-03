@@ -29,7 +29,8 @@ namespace Client.Utility
         public static async Task HandleAuthenticationProcedure(NetworkStream stream,
                                                                AuthProcedure authProcedure,
                                                                string username,
-                                                               string password)
+                                                               string password,
+                                                               string newPassword = null)
         {
             var streamReader = new StreamReader(stream);
 
@@ -48,6 +49,9 @@ namespace Client.Utility
                     break;
                 case AuthProcedure.Register:
                     procedure = CoreLocale.Register;
+                    break;
+                case AuthProcedure.ChangePassword:
+                    //TODO chpwd
                     break;
             }
             
