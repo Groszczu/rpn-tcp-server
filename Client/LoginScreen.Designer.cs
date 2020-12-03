@@ -41,6 +41,7 @@
             this.connectionLabel = new System.Windows.Forms.Label();
             this.ipLabel = new System.Windows.Forms.Label();
             this.portLabel = new System.Windows.Forms.Label();
+            this.changePasswordButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // loginLabel
@@ -179,11 +180,23 @@
             this.portLabel.TabIndex = 12;
             this.portLabel.Text = "Port number";
             // 
+            // changePasswordButton
+            // 
+            this.changePasswordButton.Font = new System.Drawing.Font("DejaVu Serif Condensed", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (238)));
+            this.changePasswordButton.Location = new System.Drawing.Point(464, 313);
+            this.changePasswordButton.Name = "changePasswordButton";
+            this.changePasswordButton.Size = new System.Drawing.Size(114, 21);
+            this.changePasswordButton.TabIndex = 13;
+            this.changePasswordButton.Text = "Change password";
+            this.changePasswordButton.UseVisualStyleBackColor = true;
+            this.changePasswordButton.Click += new System.EventHandler(this.changePasswordButton_Click);
+            // 
             // LoginScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(5F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(926, 358);
+            this.Controls.Add(this.changePasswordButton);
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.ipLabel);
             this.Controls.Add(this.portTextBox);
@@ -206,6 +219,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button changePasswordButton;
 
         #endregion
 

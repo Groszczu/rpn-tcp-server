@@ -3,6 +3,7 @@
     public enum AuthProcedure
     {
         Login,
-        Register
+        Register,
+        ChangePassword
     }
 }
