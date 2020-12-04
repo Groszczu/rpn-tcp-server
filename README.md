@@ -18,6 +18,26 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
   <img src="/media/DiagramPrzypadkow.jpg">
 </p>
 
+#### Activity diagrams
+
+* Change password
+
+<p align="center">
+  <img src="/media/ActivityChpwd.png">
+</p>
+
+* Send calculation request
+
+<p align="center">
+  <img src="/media/ActivityCalculate.png">
+</p>
+
+* Review bug reports
+
+<p align="center">
+  <img src="/media/ActivityReviewReports.png">
+</p>
+
 #### Class diagram
 
 <p align="center">
