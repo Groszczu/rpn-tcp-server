@@ -35,7 +35,7 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 * Review bug reports
 
 <p align="center">
-  <img src="/media/ActivityReviewReports.png" width=350>
+  <img src="/media/ActivityReviewReports.png" width=500>
 </p>
 
 #### Class diagram
