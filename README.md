@@ -15,7 +15,7 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 #### Use case diagram
 
 <p align="center">
-  <img src="/media/DiagramPrzypadkow.jpg">
+  <img src="/media/DiagramPrzypadkow.png">
 </p>
 
 #### Activity diagrams
