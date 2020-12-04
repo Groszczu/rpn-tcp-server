@@ -23,19 +23,19 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 * Change password
 
 <p align="center">
-  <img src="/media/ActivityChpwd.png" width=100>
+  <img src="/media/ActivityChpwd.png" width=250>
 </p>
 
 * Send calculation request
 
 <p align="center">
-  <img src="/media/ActivityCalculate.png" width=100>
+  <img src="/media/ActivityCalculate.png" width=250>
 </p>
 
 * Review bug reports
 
 <p align="center">
-  <img src="/media/ActivityReviewReports.png" width=100>
+  <img src="/media/ActivityReviewReports.png" width=250>
 </p>
 
 #### Class diagram
