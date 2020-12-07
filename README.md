@@ -15,7 +15,7 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 #### Use case diagram
 
 <p align="center">
-  <img src="/media/DiagramPrzypadkow.jpg">
+  <img src="/media/DiagramPrzypadkow.png">
 </p>
 
 #### Activity diagrams
@@ -23,19 +23,19 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 * Change password
 
 <p align="center">
-  <img src="/media/ActivityChpwd.png" width=250>
+  <img src="/media/ActivityChpwd.png" width=350>
 </p>
 
 * Send calculation request
 
 <p align="center">
-  <img src="/media/ActivityCalculate.png" width=250>
+  <img src="/media/ActivityCalculate.png" width=350>
 </p>
 
 * Review bug reports
 
 <p align="center">
-  <img src="/media/ActivityReviewReports.png" width=250>
+  <img src="/media/ActivityReviewReports.png" width=500>
 </p>
 
 #### Class diagram
