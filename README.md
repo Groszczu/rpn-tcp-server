@@ -59,7 +59,7 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 </p>
 
 <p align="center">
-  <img src="/media/screen4.PNG">
+  <img src="/media/screen4.png">
 </p>
 
 > 2020 @ PUT
