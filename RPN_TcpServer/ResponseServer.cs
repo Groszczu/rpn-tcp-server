@@ -48,5 +48,10 @@ namespace RPN_TcpServer
 			_logger($"Listening on {_iPAddress}:{_port}");
 			_server.Start();
         }
+
+		public virtual async Task Stop()
+		{
+			_server.Stop();
+		}
 	}
 }

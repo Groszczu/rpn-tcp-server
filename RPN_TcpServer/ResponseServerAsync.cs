@@ -16,9 +16,9 @@ namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private readonly UserRepository _userRepository;
-        private readonly HistoryRepository _historyRepository;
-        private readonly ReportRepository _reportRepository;
+        public UserRepository UserRepository { get; }
+        public HistoryRepository HistoryRepository { get; }
+        public ReportRepository ReportRepository { get; }
 
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
@@ -32,12 +32,12 @@ namespace RPN_TcpServer
             int port,
             ResponseTransformer<double> transformer,
             Encoding responseEncoding,
-            ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
+            ContextCreator<RpnContext> createContext, Action<string> logger = null) : base(localAddress, port, transformer, responseEncoding, logger)
         {
             var context = createContext();
-            _userRepository = new UserRepository(context);
-            _historyRepository = new HistoryRepository(context);
-            _reportRepository = new ReportRepository(context);
+            UserRepository = new UserRepository(context);
+            HistoryRepository = new HistoryRepository(context);
+            ReportRepository = new ReportRepository(context);
         }
 
         public override async Task Start()
@@ -97,7 +97,7 @@ namespace RPN_TcpServer
                 case CoreLocale.Register:
                     try
                     {
-                        currentUser = await _userRepository.Register(username, password);
+                        currentUser = await UserRepository.Register(username, password);
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -109,7 +109,7 @@ namespace RPN_TcpServer
                 case CoreLocale.Login:
                     try
                     {
-                        currentUser = _userRepository.Login(username, password);
+                        currentUser = UserRepository.Login(username, password);
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -121,7 +121,7 @@ namespace RPN_TcpServer
                 case CoreLocale.ChangePassword:
                     try
                     {
-                        currentUser = await _userRepository.ChangePassword(username, password, newPassword);
+                        currentUser = await UserRepository.ChangePassword(username, password, newPassword);
                         await Send(stream, $"Password for user {username} has been changed");
                         break;
                     }
@@ -153,7 +153,7 @@ namespace RPN_TcpServer
                 }
                 catch (Exception)
                 {
-                    _userRepository.Logout(currentUser);
+                    UserRepository.Logout(currentUser);
                     CloseStreams(streamReader);
                     break;
                 }
@@ -162,11 +162,11 @@ namespace RPN_TcpServer
                 {
                     if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _historyRepository.All);
+                        await Send(stream, HistoryRepository.All);
                     }
                     else
                     {
-                        await Send(stream, _historyRepository.ById(currentUser.Id));
+                        await Send(stream, HistoryRepository.ById(currentUser.Id));
                     }
                 }
                 else if (Regex.IsMatch(input, RegularExpression.Report))
@@ -174,13 +174,13 @@ namespace RPN_TcpServer
                     var match = Regex.Match(input, RegularExpression.ReportWithGroup);
                     var message = match.Groups[RegularExpression.ReportGroup].Value;
 
-                    await _reportRepository.Add(currentUser, message);
+                    await ReportRepository.Add(currentUser, message);
                 }
                 else if (input == CoreLocale.GetReports)
                 {
                     if (currentUser.Username == "admin")
                     {
-                        await Send(stream, _reportRepository.All);
+                        await Send(stream, ReportRepository.All);
                     }
                     else
                     {
@@ -197,7 +197,7 @@ namespace RPN_TcpServer
                     {
                         var result = _transformer(input).ToString();
 
-                        await _historyRepository.Add(currentUser, input, result);
+                        await HistoryRepository.Add(currentUser, input, result);
 
                         await Send(stream, result);
                     }
@@ -208,7 +208,7 @@ namespace RPN_TcpServer
                 }
             }
 
-            _userRepository.Logout(currentUser);
+            UserRepository.Logout(currentUser);
             CloseStreams(streamReader);
         }
 

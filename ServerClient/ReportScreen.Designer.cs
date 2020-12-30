@@ -1,6 +1,6 @@
-﻿namespace Client
+﻿namespace ServerClient
 {
-    partial class ListScreen
+    partial class ReportScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -29,39 +29,44 @@
         private void InitializeComponent()
         {
             this.listBox = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // listBox
             // 
-            this.listBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.listBox.FormattingEnabled = true;
-            this.listBox.HorizontalScrollbar = true;
-            this.listBox.ItemHeight = 16;
-            this.listBox.Location = new System.Drawing.Point(12, 12);
+            this.listBox.Location = new System.Drawing.Point(12, 31);
             this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(474, 468);
+            this.listBox.Size = new System.Drawing.Size(453, 238);
             this.listBox.TabIndex = 0;
             // 
-            // ListScreen
+            // label1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.label1.Location = new System.Drawing.Point(8, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(70, 20);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Reports:";
+            // 
+            // ReportScreen
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(498, 509);
+            this.ClientSize = new System.Drawing.Size(477, 280);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
-            this.MaximizeBox = false;
-            this.Name = "ListScreen";
-            this.Text = "RPN Calculator - Calculation History";
+            this.Name = "ReportScreen";
+            this.Text = "ReportScreen";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.ListBox listBox;
+        private System.Windows.Forms.Label label1;
     }
 }

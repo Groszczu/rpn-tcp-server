@@ -11,7 +11,7 @@ namespace RPN_Database.Repository
 {
     public class UserRepository : ContextBasedRepository
     {
-        private DbSet<User> Users => _context.Users;
+        public DbSet<User> Users => _context.Users;
 
         public HashSet<User> ConnectedUsers { get; }
 
