@@ -31,6 +31,8 @@
             this.userBox = new System.Windows.Forms.CheckedListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.acceptButton = new System.Windows.Forms.Button();
+            this.rejectButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // userBox
@@ -38,7 +40,7 @@
             this.userBox.FormattingEnabled = true;
             this.userBox.Location = new System.Drawing.Point(12, 67);
             this.userBox.Name = "userBox";
-            this.userBox.Size = new System.Drawing.Size(203, 229);
+            this.userBox.Size = new System.Drawing.Size(435, 229);
             this.userBox.TabIndex = 0;
             // 
             // label1
@@ -61,14 +63,39 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Select users to assign roles";
             // 
+            // acceptButton
+            // 
+            this.acceptButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.acceptButton.Location = new System.Drawing.Point(252, 12);
+            this.acceptButton.Name = "acceptButton";
+            this.acceptButton.Size = new System.Drawing.Size(89, 37);
+            this.acceptButton.TabIndex = 3;
+            this.acceptButton.Text = "Accept";
+            this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
+            // 
+            // rejectButton
+            // 
+            this.rejectButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.rejectButton.Location = new System.Drawing.Point(358, 12);
+            this.rejectButton.Name = "rejectButton";
+            this.rejectButton.Size = new System.Drawing.Size(89, 37);
+            this.rejectButton.TabIndex = 4;
+            this.rejectButton.Text = "Reject";
+            this.rejectButton.UseVisualStyleBackColor = true;
+            this.rejectButton.Click += new System.EventHandler(this.rejectButton_Click);
+            // 
             // RoleScreen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(226, 308);
+            this.ClientSize = new System.Drawing.Size(459, 308);
+            this.Controls.Add(this.rejectButton);
+            this.Controls.Add(this.acceptButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.userBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "RoleScreen";
             this.Text = "RoleScreen";
             this.ResumeLayout(false);
@@ -81,5 +108,7 @@
         private System.Windows.Forms.CheckedListBox userBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button acceptButton;
+        private System.Windows.Forms.Button rejectButton;
     }
 }

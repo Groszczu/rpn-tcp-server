@@ -153,6 +153,7 @@
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.logBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainScreen";
             this.Text = "MainScreen";
             this.ResumeLayout(false);

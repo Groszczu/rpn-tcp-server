@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using RPN_Database.Model;
 
 namespace ServerClient
 {
     public partial class ReportScreen : Form
     {
-        public ReportScreen(List<string> elements, string title)
+        public ReportScreen(List<Report> elements, string title)
         {
             InitializeComponent();
             Text = $"Admin Panel - {title}";

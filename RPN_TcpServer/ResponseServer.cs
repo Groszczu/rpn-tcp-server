@@ -45,12 +45,14 @@ namespace RPN_TcpServer
 		/// </summary>
 		public virtual async Task Start()
         {
+			_logger("[Server] Server started!");
 			_logger($"Listening on {_iPAddress}:{_port}");
 			_server.Start();
         }
 
 		public virtual async Task Stop()
 		{
+			_logger("[Server] Server stopped!");
 			_server.Stop();
 		}
 	}

@@ -8,7 +8,7 @@ namespace RPN_Database.Repository
 {
     public class ReportRepository : ContextBasedRepository
     {
-        private DbSet<Report> Reports => _context.Reports;
+        public DbSet<Report> Reports => _context.Reports;
 
         public IEnumerable<Report> All => Reports.ToList();
 

@@ -47,9 +47,9 @@ namespace RPN_TcpServer
             while (true)
             {
                 var tcpClient = await _server.AcceptTcpClientAsync();
-                _logger("Client connected");
+                _logger("[Server] Client connected");
 
-                var task = ServeClient(tcpClient).ContinueWith(result => { _logger("Client disconnected"); });
+                var task = ServeClient(tcpClient).ContinueWith(result => { _logger("[Server] Client disconnected"); });
 
                 if (task.IsFaulted)
                 {
@@ -123,6 +123,7 @@ namespace RPN_TcpServer
                     {
                         currentUser = await UserRepository.ChangePassword(username, password, newPassword);
                         await Send(stream, $"Password for user {username} has been changed");
+                        _logger($"[Server] Password for user {username} has been changed");
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -133,10 +134,16 @@ namespace RPN_TcpServer
                     }
                 default:
                     await Send(stream, "Invalid authentication message format");
+                    _logger($"[Server] Invalid authentication message format");
 
                     CloseStreams(streamReader);
                     return;
             }
+
+            if (currentUser.Username == "admin")
+                _logger("[Server] Admin logged in client application");
+            else
+                _logger("[Server] Normal user logged in client application");
 
             while (true)
             {
@@ -204,6 +211,7 @@ namespace RPN_TcpServer
                     catch (Exception e)
                     {
                         await Send(stream, $"Calculation error: {e.Message}");
+                        _logger($"[Alert] Calculation error: {e.Message}");
                     }
                 }
             }

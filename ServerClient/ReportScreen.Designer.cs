@@ -57,6 +57,7 @@
             this.ClientSize = new System.Drawing.Size(477, 280);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "ReportScreen";
             this.Text = "ReportScreen";
             this.ResumeLayout(false);

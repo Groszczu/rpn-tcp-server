@@ -11,7 +11,6 @@ namespace ServerClient.Functions
 {
     class LogService
     {
-
         public class ControlWriter : TextWriter
         {
             private Control textbox;
@@ -22,7 +21,14 @@ namespace ServerClient.Functions
 
             public override void Write(string value)
             {
-                textbox.Text += value;
+                try
+                {
+                    textbox.Text += value + "\n";
+                }
+                catch (InvalidOperationException)
+                {
+                    Console.WriteLine("Exception in Control Writer");
+                }
             }
 
             public override Encoding Encoding
