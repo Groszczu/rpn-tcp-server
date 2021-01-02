@@ -60,7 +60,7 @@ namespace RPN_Database.Repository
                 Password = EnhancedHashPassword(password)
             });
 
-            await SaveChanges();
+            await SaveChangesAsync();
 
             return Login(username, password);
         }
@@ -71,8 +71,8 @@ namespace RPN_Database.Repository
             {
                 var user = Login(username, password);
                 user.Password = EnhancedHashPassword(newpassword);
-                
-                await SaveChanges();
+
+                await SaveChangesAsync();
                 return user;
             }
             catch
@@ -84,6 +84,19 @@ namespace RPN_Database.Repository
         public void Logout(User user)
         {
             ConnectedUsers.Remove(user);
+        }
+
+        public bool IsAdmin(User user)
+        {
+            try
+            {
+                var application = _context.Applications.First(a => a.UserId == user.Id);
+                return application.IsRejected == false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

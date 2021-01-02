@@ -1,30 +1,36 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.IO;
-
 using static BCrypt.Net.BCrypt;
 
 namespace RPN_Database
 {
-    public static class ContextBuilder
+    public class ContextBuilder
     {
+        private readonly Action<string> _logger;
+
+        public ContextBuilder(Action<string> logger = null)
+        {
+            _logger = logger ?? Console.WriteLine;
+        }
+        
         /// <summary>
         /// Metoda zapewniająca utworzenie bazy danych i kontekstu do pobierania danych.
         /// </summary>
         /// <returns>Kontekst bazy danych kalkulatora RPN.</returns>
-        public static RpnContext CreateRpnContext()
+        public RpnContext CreateRpnContext()
         {
             string workingDirectory = Environment.CurrentDirectory;
             if (File.Exists($"{workingDirectory}/rpn.sqlite"))
             {
-                Console.WriteLine("Database exist!");
+                _logger("Database exist!");
             }
             else
             {
                 SQLiteConnection conn = new SQLiteConnection($"Data Source={workingDirectory}/rpn.sqlite");
 
                 conn.Open();
-                Console.WriteLine("Database does not exist! Creating database...");
+                _logger("Database does not exist! Creating database...");
 
                 var cmd = conn.CreateCommand();
 
@@ -53,11 +59,26 @@ namespace RPN_Database
 
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('admin', '{EnhancedHashPassword("admin")}', CURRENT_TIMESTAMP);";
+                cmd.CommandText = @"CREATE TABLE AdminApplications (
+                                    Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                    UserId INTEGER NOT NULL REFERENCES Users(Id) UNIQUE, 
+                                    IsRejected BOOL,
+                                    Created DATE NOT NULL);";
 
                 cmd.ExecuteNonQuery();
 
-                cmd.CommandText = $@"INSERT INTO Users (Username, Password, Created) VALUES ('user', '{EnhancedHashPassword("user")}', CURRENT_TIMESTAMP);";
+                cmd.CommandText =
+                    $@"INSERT INTO Users (Username, Password, Created) VALUES ('admin', '{EnhancedHashPassword("admin")}', CURRENT_TIMESTAMP);";
+
+                cmd.ExecuteNonQuery();
+                
+                cmd.CommandText =
+                    $@"INSERT INTO AdminApplications (UserId, IsRejected, Created) VALUES (1, FALSE, CURRENT_TIMESTAMP);";
+
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText =
+                    $@"INSERT INTO Users (Username, Password, Created) VALUES ('user', '{EnhancedHashPassword("user")}', CURRENT_TIMESTAMP);";
 
                 cmd.ExecuteNonQuery();
             }
