@@ -20,6 +20,7 @@ namespace ServerClient
         private ResponseServerAsync _rpnServer;
         private ControlWriter _ctrlWriter;
         private bool isRunned = false;
+
         public MainScreen()
         {
             InitializeComponent();
@@ -32,7 +33,6 @@ namespace ServerClient
         {
             try
             {
-
                 IPAddress ipAddress = null;
                 var port = 0;
 
@@ -55,7 +55,10 @@ namespace ServerClient
 
                 Console.WriteLine(ipAddress.ToString());
 
-                _rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext, _ctrlWriter.Write);
+                var contextBuilder = new ContextBuilder(_ctrlWriter.Write);
+
+                _rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII,
+                    contextBuilder.CreateRpnContext, _ctrlWriter.Write);
 
                 if (!isRunned)
                 {
@@ -101,7 +104,6 @@ namespace ServerClient
             {
                 MessageBox.Show("[Alert] There are no users in data base", "Info");
                 _ctrlWriter.Write("[Alert] There are no users in data base");
-
             }
             catch (NullReferenceException)
             {
