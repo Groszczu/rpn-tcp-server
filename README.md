@@ -20,6 +20,12 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 
 #### Activity diagrams
 
+* Assigning admin role
+
+<p align="center">
+  <img src="/media/AdminRoleGiving.png" width=350>
+</p>
+
 * Change password
 
 <p align="center">
