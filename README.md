@@ -68,4 +68,13 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
   <img src="/media/screen4.png">
 </p>
 
+<p align="center">
+  <img src="/media/screen5.png">
+</p>
+
+<p align="center">
+  <img src="/media/screen6.png">
+</p>
+
+
 > 2020 @ PUT
