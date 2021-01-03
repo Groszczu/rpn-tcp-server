@@ -20,6 +20,8 @@ namespace RPN_TcpServer
         public HistoryRepository HistoryRepository { get; }
         public ReportRepository ReportRepository { get; }
 
+        public ApplicationRepository ApplicationRepository { get; }
+
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
         /// </summary>
@@ -28,16 +30,20 @@ namespace RPN_TcpServer
         /// <param name="transformer">Funkcja przeprowadzająca obliczenia RPN.</param>
         /// <param name="responseEncoding">Enkodowanie wykorzystywane do przeprowadzania komunikacji.</param>
         /// <param name="createContext">Funkcja tworząca kontekst bazy danych kalkulatora RPN.</param>
-        public ResponseServerAsync(IPAddress localAddress,
+        public ResponseServerAsync(
+            IPAddress localAddress,
             int port,
             ResponseTransformer<double> transformer,
             Encoding responseEncoding,
-            ContextCreator<RpnContext> createContext, Action<string> logger = null) : base(localAddress, port, transformer, responseEncoding, logger)
+            ContextCreator<RpnContext> createContext,
+            Action<string> logger = null)
+            : base(localAddress, port, transformer, responseEncoding, logger)
         {
             var context = createContext();
             UserRepository = new UserRepository(context);
             HistoryRepository = new HistoryRepository(context);
             ReportRepository = new ReportRepository(context);
+            ApplicationRepository = new ApplicationRepository(context);
         }
 
         public override async Task Start()
@@ -134,13 +140,13 @@ namespace RPN_TcpServer
                     }
                 default:
                     await Send(stream, "Invalid authentication message format");
-                    _logger($"[Server] Invalid authentication message format");
+                    _logger("[Server] Invalid authentication message format");
 
                     CloseStreams(streamReader);
                     return;
             }
 
-            if (currentUser.Username == "admin")
+            if (UserRepository.IsAdmin(currentUser))
                 _logger("[Server] Admin logged in client application");
             else
                 _logger("[Server] Normal user logged in client application");
@@ -153,9 +159,13 @@ namespace RPN_TcpServer
                     await Send(stream,
                         new[]
                         {
-                            "Enter RPN expression", "'history' to check last inputs", "'exit' to disconnect",
-                            "'report <message>' to report a problem"
+                            "Enter RPN expression",
+                            $"'{CoreLocale.History}' to check last inputs",
+                            $"'{CoreLocale.Exit}' to disconnect",
+                            $"'{CoreLocale.Report} <message>' to report a problem",
+                            $"'{CoreLocale.RequestAdmin}' to create an admin application for current user"
                         });
+
                     input = await streamReader.ReadLineAsync();
                 }
                 catch (Exception)
@@ -192,6 +202,29 @@ namespace RPN_TcpServer
                     else
                     {
                         await Send(stream, "Not authorized");
+                    }
+                }
+                else if (input == CoreLocale.RequestAdmin)
+                {
+                    if (UserRepository.IsAdmin(currentUser))
+                    {
+                        await Send(stream, "Current user already has admin priviledges");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var application = await ApplicationRepository.CreateNewApplication(currentUser);
+                            await Send(stream,
+                                $"Your request has been submitted on {application.Created} - request id: {application.Id}");
+
+                            _logger($"[Server] User with id {currentUser.Id} opened an admin application");
+                        }
+                        catch (Exception) // DB UNIQUE CONSTRAINT
+                        {
+                            await Send(stream,
+                                "Couldn't create an application, you may already have a request waiting for approval or you've been rejected as an admin");
+                        }
                     }
                 }
                 else if (input == CoreLocale.Exit)

@@ -16,7 +16,7 @@ namespace RPN_Database.Repository
         {
         }
 
-        public async Task<AdminApplication> Add(User user)
+        public async Task<AdminApplication> CreateNewApplication(User user)
         {
             var entity = new AdminApplication
             {
