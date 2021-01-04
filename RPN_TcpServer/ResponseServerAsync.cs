@@ -146,10 +146,9 @@ namespace RPN_TcpServer
                     return;
             }
 
-            if (UserRepository.IsAdmin(currentUser))
-                _logger("[Server] Admin logged in client application");
-            else
-                _logger("[Server] Normal user logged in client application");
+            _logger(UserRepository.IsAdmin(currentUser)
+                ? "[Server] Admin logged in client application"
+                : "[Server] Normal user logged in client application");
 
             while (true)
             {
@@ -177,7 +176,7 @@ namespace RPN_TcpServer
 
                 if (input == CoreLocale.History)
                 {
-                    if (currentUser.Username == "admin")
+                    if (UserRepository.IsAdmin(currentUser))
                     {
                         await Send(stream, HistoryRepository.All);
                     }
@@ -195,9 +194,20 @@ namespace RPN_TcpServer
                 }
                 else if (input == CoreLocale.GetReports)
                 {
-                    if (currentUser.Username == "admin")
+                    if (UserRepository.IsAdmin(currentUser))
                     {
                         await Send(stream, ReportRepository.All);
+                    }
+                    else
+                    {
+                        await Send(stream, "Not authorized");
+                    }
+                }
+                else if (input == CoreLocale.GetApplications)
+                {
+                    if (UserRepository.IsAdmin(currentUser))
+                    {
+                        await Send(stream, ApplicationRepository.Unresolved());
                     }
                     else
                     {
@@ -208,7 +218,7 @@ namespace RPN_TcpServer
                 {
                     if (UserRepository.IsAdmin(currentUser))
                     {
-                        await Send(stream, "Current user already has admin priviledges");
+                        await Send(stream, CoreLocale.IsAdmin);
                     }
                     else
                     {
@@ -223,7 +233,7 @@ namespace RPN_TcpServer
                         catch (Exception) // DB UNIQUE CONSTRAINT
                         {
                             await Send(stream,
-                                "Couldn't create an application, you may already have a request waiting for approval or you've been rejected as an admin");
+                                "Couldn't create an application, you may already have a request waiting for approval or you've been rejected as an admin.");
                         }
                     }
                 }
