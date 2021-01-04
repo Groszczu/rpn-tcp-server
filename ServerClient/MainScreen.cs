@@ -96,7 +96,7 @@ namespace ServerClient
         {
             try
             {
-                var results = _rpnServer.UserRepository.Users.ToList();
+                var results = _rpnServer.ApplicationRepository.Applications.ToList();
                 var reportScreen = new RoleScreen(results, "Give a role");
                 reportScreen.Show();
             }

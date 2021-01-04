@@ -13,25 +13,54 @@ namespace ServerClient
 {
     public partial class RoleScreen : Form
     {
-        public RoleScreen(List<User> elements, string title)
+        public RoleScreen(List<AdminApplication> elements, string title)
         {
             InitializeComponent();
             Text = $"Admin Panel - {title}";
-            var list = new List<string>();
-            foreach (var x in elements)
-                list.Add(x.Username);
 
-            userBox.Items.AddRange(list.ToArray());
-            userBox.CheckOnClick = true;
+            userBox.Items.AddRange(elements.ToArray());
+            //userBox.CheckOnClick = true;
         }
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
+            var result = MessageBox.Show("Are you sure you want to decline selected applications?", "Warning",
+                MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                foreach (Application item in userBox.CheckedItems)
+                {
+                    await SendToStreamAsync(_client.GetStream(), item.AsAcceptMessage());
+                }
+
+                MessageBox.Show("Applications have been successfully accepted. This window will close now.", "Success");
+            }
+            else
+            {
+                MessageBox.Show("No changes were made. This window will close now.", "Info");
+            }
 
         }
 
         private void rejectButton_Click(object sender, EventArgs e)
         {
+            var result = MessageBox.Show("Are you sure you want to decline selected applications?", "Warning",
+                MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                foreach (Application item in applicationListBox.CheckedItems)
+                {
+                    await SendToStreamAsync(_client.GetStream(), item.AsDeclineMessage());
+                }
+
+                MessageBox.Show("Applications have been successfully declined. This window will close now.", "Success");
+            }
+            else
+            {
+                MessageBox.Show("No changes were made. This window will close now.", "Info");
+            }
 
         }
     }
