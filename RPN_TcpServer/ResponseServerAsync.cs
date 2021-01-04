@@ -237,6 +237,13 @@ namespace RPN_TcpServer
                         }
                     }
                 }
+                else if (Regex.IsMatch(input, RegularExpression.ResolveApplication))
+                {
+                    var match = Regex.Match(input, RegularExpression.ResolveApplication);
+                    var id = int.Parse(match.Groups[2].Value);
+
+                    ApplicationRepository.UpdateRejection(id, match.Groups[1].Value == "decline");
+                }
                 else if (input == CoreLocale.Exit)
                 {
                     break;

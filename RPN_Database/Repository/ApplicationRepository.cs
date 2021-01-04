@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using RPN_Database.Model;
@@ -38,6 +39,14 @@ namespace RPN_Database.Repository
                 .ToList();
 
             return applications.Select(a => $"{a.Id},{a.User.Username},{a.Created}");
+        }
+
+        public async void UpdateRejection(int id, bool? value)
+        {
+            var application = await Applications.FindAsync(id);
+            if (application != null) application.IsRejected = value;
+
+            await SaveChangesAsync();
         }
     }
 }

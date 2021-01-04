@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using Client.Utility;
 using RPN_Locale;
 using static Client.Utility.Procedures;
+using Application = Client.Model.Application;
 using ArgumentException = System.ArgumentException;
 using DataException = System.Data.DataException;
 
@@ -119,9 +121,10 @@ namespace Client
             try
             {
                 var results = await ProcessInformationRequest(_client.GetStream(), Request.Applications);
+                var applications = results.Select(Application.FromString).ToList();
 
-                var applicationScreen = new ListScreen(results, "Admin applications");
-                applicationScreen.Show();
+                var adminScreen = new AdminApprovalScreen(_client, applications);
+                adminScreen.Show();
             }
             catch (DataException)
             {

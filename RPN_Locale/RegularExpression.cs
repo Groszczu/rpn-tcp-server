@@ -9,5 +9,6 @@
         public const string ReportWithGroup = @"^report\s(?<message>.*)";
         public const string Report = @"^report\s.*";
         public const string ReportGroup = "message";
+        public const string ResolveApplication = @"^application\s(accept|decline)\s(\d*)$";
     }
 }
