@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,9 +30,14 @@ namespace RPN_Database.Repository
             return entity;
         }
 
-        public IEnumerable<AdminApplication> Unresolved()
+        public IEnumerable<string> Unresolved()
         {
-            return Applications.Where(a => a.IsRejected == null).ToList();
+            var applications = Applications
+                .Where(a => a.IsRejected == null)
+                .Include(a => a.User)
+                .ToList();
+
+            return applications.Select(a => $"{a.Id},{a.User.Username},{a.Created}");
         }
     }
 }
