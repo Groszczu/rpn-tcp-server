@@ -26,7 +26,7 @@ namespace RPN_Database.Repository
 
             Reports.Add(newReport);
 
-            await SaveChanges();
+            await SaveChangesAsync();
 
             return newReport;
         }

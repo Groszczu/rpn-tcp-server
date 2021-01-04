@@ -62,12 +62,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminApprovalScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminApprovalScreen.Designer.cs">
+      <DependentUpon>AdminApprovalScreen.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChangePasswordScreen.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ChangePasswordScreen.Designer.cs">
       <DependentUpon>ChangePasswordScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Application.cs" />
     <Compile Include="Utility\AuthProcedure.cs" />
     <Compile Include="Utility\Core.cs" />
     <Compile Include="Exceptions\ServerDownException.cs" />
@@ -93,6 +100,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Procedures.cs" />
     <Compile Include="Utility\Request.cs" />
+    <EmbeddedResource Include="AdminApprovalScreen.resx">
+      <DependentUpon>AdminApprovalScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ChangePasswordScreen.resx">
       <DependentUpon>ChangePasswordScreen.cs</DependentUpon>
     </EmbeddedResource>

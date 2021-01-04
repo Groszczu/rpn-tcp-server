@@ -12,21 +12,15 @@ namespace RPN_Tests
     [TestClass]
     public class InitializeTests
     {
+        readonly ContextBuilder _contextBuilder = new ContextBuilder();
+
         [TestMethod]
-        public void IPAdressCheckTest()
+        public void ServerCreatesInstance()
         {
             var port = 1024;
             var ipAddress = IPAddress.Parse("0.0");
-            Assert.ThrowsException<FileNotFoundException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext));
-        }
-
-        [TestMethod]
-        public void PortNumberCheckTest()
-        {
-            var port = 443;
-            var ipAddress = IPAddress.Parse("127.0.0.1");
-            Assert.ThrowsException<FileNotFoundException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext));
-
+            new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII,
+                _contextBuilder.CreateRpnContext);
         }
 
         [TestMethod]
@@ -34,8 +28,8 @@ namespace RPN_Tests
         {
             var port = -2;
             var ipAddress = IPAddress.Parse("127.0.0.1");
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII, ContextBuilder.CreateRpnContext));
-
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new ResponseServerAsync(ipAddress, port,
+                RPNCalculator.GetResult, Encoding.ASCII, _contextBuilder.CreateRpnContext));
         }
     }
 }

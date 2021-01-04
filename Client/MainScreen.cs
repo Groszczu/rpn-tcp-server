@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Windows.Forms;
 using Client.Utility;
+using RPN_Locale;
 using static Client.Utility.Procedures;
+using Application = Client.Model.Application;
 using ArgumentException = System.ArgumentException;
 using DataException = System.Data.DataException;
 
@@ -11,6 +14,7 @@ namespace Client
     public partial class MainScreen : Form
     {
         private readonly TcpClient _client;
+        private readonly bool _isUserAdmin;
 
         public MainScreen(TcpClient client, string username)
         {
@@ -19,7 +23,10 @@ namespace Client
             _client = client;
 
             Text = $"RPN Calculator - Logged in as \"{username}\"";
-            reportViewButton.Visible = (username == "admin");
+
+            _isUserAdmin = (ProcessAdminRequest(_client.GetStream()) == CoreLocale.IsAdmin);
+            requestAdminButton.Visible = !_isUserAdmin;
+            adminRequestApprovalButton.Visible = bugReportsButton.Visible = _isUserAdmin;
         }
 
         private void rpnTextBox_TextChanged(object sender, EventArgs eventArgs) => rpnTextBox.HighlightRpnExpression();
@@ -36,7 +43,8 @@ namespace Client
             }
             catch (DataException)
             {
-                MessageBox.Show("Server didn't respond properly.\nAre you sure your expression is correct?\nIf the problem persists, contact an administrator.");
+                MessageBox.Show(
+                    "Server didn't respond properly.\nAre you sure your expression is correct?\nIf the problem persists, contact an administrator.");
             }
         }
 
@@ -53,21 +61,19 @@ namespace Client
             {
                 MessageBox.Show("You haven't made any calculations yet.", "Info");
             }
-
         }
 
-        private async void reportViewButton_Click(object sender, EventArgs e)
+        private void requestAdminButton_Click(object sender, EventArgs e)
         {
-            try
+            if (!_isUserAdmin)
             {
-                var results = await ProcessInformationRequest(_client.GetStream(), Request.Reports);
+                var message = ProcessAdminRequest(_client.GetStream());
 
-                var reportScreen = new ListScreen(results, "Bug reports");
-                reportScreen.Show();
+                MessageBox.Show(message, "Alert");
             }
-            catch (DataException)
+            else
             {
-                MessageBox.Show("There are no bug reports.", "Info");
+                MessageBox.Show("Current user already has admin priviledges.", "Info");
             }
         }
 
@@ -95,5 +101,35 @@ namespace Client
             }
         }
 
+        private async void bugReportsButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var results = await ProcessInformationRequest(_client.GetStream(), Request.Reports);
+
+                var reportScreen = new ListScreen(results, "Bug reports");
+                reportScreen.Show();
+            }
+            catch (DataException)
+            {
+                MessageBox.Show("There are no bug reports.", "Info");
+            }
+        }
+
+        private async void adminRequestApprovalButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var results = await ProcessInformationRequest(_client.GetStream(), Request.Applications);
+                var applications = results.Select(Application.FromString).ToList();
+
+                var adminScreen = new AdminApprovalScreen(_client, applications);
+                adminScreen.Show();
+            }
+            catch (DataException)
+            {
+                MessageBox.Show("There are no pending admin applications.", "Info");
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@
     public enum Request
     {
         Reports,
-        History
+        History,
+        Applications
     }
 }

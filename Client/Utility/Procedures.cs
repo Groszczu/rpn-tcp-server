@@ -27,10 +27,10 @@ namespace Client.Utility
         /// <exception cref="ServerDownException">Gdy dane użytkownika nie istnieją w bazie danych serwera.</exception>
         /// <exception cref="ArgumentException">Gdy dane użytkownika są puste.</exception>
         public static async Task HandleAuthenticationProcedure(NetworkStream stream,
-                                                               AuthProcedure authProcedure,
-                                                               string username,
-                                                               string password,
-                                                               string newPassword = null)
+            AuthProcedure authProcedure,
+            string username,
+            string password,
+            string newPassword = null)
         {
             var streamReader = new StreamReader(stream);
 
@@ -55,7 +55,7 @@ namespace Client.Utility
                     request = $"{procedure} {username} {password} {newPassword}";
                     break;
             }
-            
+
             await SendToStreamAsync(stream, request ?? $"{procedure} {username} {password}");
 
             var message = await streamReader.ReadLineAsync(); //Enter RPN Expression / Error
@@ -101,7 +101,7 @@ namespace Client.Utility
             _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
             _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
 
-            if (!double.TryParse(result, NumberStyles.Any, CultureInfo.InvariantCulture,  out _))
+            if (!double.TryParse(result, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
                 throw new DataException("returned result is non a number");
 
             return result;
@@ -134,6 +134,10 @@ namespace Client.Utility
                     regex = RegularExpression.ReportString;
                     break;
                 }
+                case Request.Applications:
+                    expression = CoreLocale.GetApplications;
+                    regex = RegularExpression.ApplicationString;
+                    break;
             }
 
             await SendToStreamAsync(stream, expression);
@@ -181,6 +185,27 @@ namespace Client.Utility
             _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
             _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
             _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
+        }
+
+        /// <summary>
+        /// Przeprowadza proces zgłoszenia aplikacji o uprawnienia administratora.
+        /// </summary>
+        /// <param name="stream">Strumień.</param>
+        /// <returns></returns>
+        public static string ProcessAdminRequest(NetworkStream stream)
+        {
+            var streamReader = new StreamReader(stream);
+
+            SendToStream(stream, CoreLocale.RequestAdmin);
+
+            var message = streamReader.ReadLine();
+
+            _ = streamReader.ReadLine(); //Enter RPN Expression
+            _ = streamReader.ReadLine(); //'history' to check last inputs
+            _ = streamReader.ReadLine(); //'exit' to disconnect
+            _ = streamReader.ReadLine(); //'report <message>' to report a problem
+
+            return message;
         }
     }
 }
