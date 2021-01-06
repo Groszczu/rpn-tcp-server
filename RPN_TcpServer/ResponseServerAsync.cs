@@ -69,7 +69,7 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] {"You are connected", "Please authenticate"});
+            await Send(stream, new[] { "You are connected", "Please authenticate" });
             var authInput = await streamReader.ReadLineAsync();
 
             string authOperationType, username, password, newPassword = string.Empty;
@@ -288,10 +288,16 @@ namespace RPN_TcpServer
 
         private void CloseStreams(StreamReader reader)
         {
-            var stream = reader.BaseStream;
+            try
+            {
+                var stream = reader.BaseStream;
 
-            reader.Close();
-            stream.Close();
+                reader.Close();
+                stream.Close();
+            }catch(NullReferenceException)
+            {
+                _logger($"[Alert] Client disconnected with error!");
+            }
         }
     }
 }

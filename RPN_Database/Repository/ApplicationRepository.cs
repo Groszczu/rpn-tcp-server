@@ -41,12 +41,29 @@ namespace RPN_Database.Repository
             return applications.Select(a => $"{a.Id},{a.User.Username},{a.Created}");
         }
 
+        public IEnumerable<AdminApplication> UnresolvedAsObject()
+        {
+            var applications = Applications
+                .Where(a => a.IsRejected == null)
+                .Include(a => a.User)
+                .ToList();
+
+            return applications;
+        }
+
         public async void UpdateRejection(int id, bool? value)
         {
-            var application = await Applications.FindAsync(id);
-            if (application != null) application.IsRejected = value;
+            try
+            {
+                var application = await Applications.FindAsync(id);
+                if (application != null) application.IsRejected = value;
 
-            await SaveChangesAsync();
+                await SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

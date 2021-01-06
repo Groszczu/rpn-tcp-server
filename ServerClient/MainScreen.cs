@@ -27,12 +27,19 @@ namespace ServerClient
             Text = "Admin Panel";
 
             _ctrlWriter = new ControlWriter(logBox);
+            roleButton.Visible = false;
+            reportButton.Visible = false;
+            stopButton.Visible = false;
         }
 
         private async void startButton_Click(object sender, EventArgs e)
         {
             try
             {
+                roleButton.Visible = true;
+                reportButton.Visible = true;
+                stopButton.Visible = true;
+                startButton.Visible = false;
                 IPAddress ipAddress = null;
                 var port = 0;
 
@@ -76,6 +83,10 @@ namespace ServerClient
 
         private async void stopButton_Click(object sender, EventArgs e)
         {
+            startButton.Visible = true;
+            roleButton.Visible = false;
+            reportButton.Visible = false;
+            stopButton.Visible = false;
             try
             {
                 if (isRunned == true)
@@ -96,18 +107,19 @@ namespace ServerClient
         {
             try
             {
-                var results = _rpnServer.ApplicationRepository.Applications.ToList();
-                var reportScreen = new RoleScreen(results, "Give a role");
-                reportScreen.Show();
+                if (_rpnServer.ApplicationRepository.UnresolvedAsObject().ToArray().Length == 0)
+                    MessageBox.Show("[Alert] The privilege request list is empty", "Info");
+                else
+                {
+                    var roleScreen = new RoleScreen("Give a role", _rpnServer);
+                    roleScreen.Show();
+                }
+
             }
             catch (DataException)
             {
                 MessageBox.Show("[Alert] There are no users in data base", "Info");
                 _ctrlWriter.Write("[Alert] There are no users in data base");
-            }
-            catch (NullReferenceException)
-            {
-                _ctrlWriter.Write("[Alert] Start server to look into user list");
             }
         }
 
@@ -116,8 +128,14 @@ namespace ServerClient
             try
             {
                 var results = _rpnServer.ReportRepository.Reports.ToList();
-                var reportScreen = new ReportScreen(results, "Bug reports");
-                reportScreen.Show();
+                if (results.Count == 0)
+                    MessageBox.Show("[Alert] The privilege request list is empty", "Info");
+                else
+                {
+                    var reportScreen = new ReportScreen(results, "Bug reports");
+                    reportScreen.Show();
+                }
+
             }
             catch (DataException)
             {
