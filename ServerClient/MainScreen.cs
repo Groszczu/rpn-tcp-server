@@ -20,6 +20,7 @@ namespace ServerClient
         private ResponseServerAsync _rpnServer;
         private ControlWriter _ctrlWriter;
         private bool isRunned = false;
+        private List<Button> _buttons;
 
         public MainScreen()
         {
@@ -27,18 +28,17 @@ namespace ServerClient
             Text = "Admin Panel";
 
             _ctrlWriter = new ControlWriter(logBox);
-            roleButton.Visible = false;
-            reportButton.Visible = false;
-            stopButton.Visible = false;
+            var buttons = new List<Button> { roleButton, reportButton, stopButton};
+            _buttons = buttons;
+
+            SetVisibility(buttons, false);
         }
 
         private async void startButton_Click(object sender, EventArgs e)
         {
             try
             {
-                roleButton.Visible = true;
-                reportButton.Visible = true;
-                stopButton.Visible = true;
+                SetVisibility(_buttons, true);
                 startButton.Visible = false;
                 IPAddress ipAddress = null;
                 var port = 0;
@@ -84,9 +84,7 @@ namespace ServerClient
         private async void stopButton_Click(object sender, EventArgs e)
         {
             startButton.Visible = true;
-            roleButton.Visible = false;
-            reportButton.Visible = false;
-            stopButton.Visible = false;
+            SetVisibility(_buttons, false);
             try
             {
                 if (isRunned == true)

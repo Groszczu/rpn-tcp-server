@@ -11,9 +11,16 @@ namespace ServerClient.Functions
 {
     class LogService
     {
+        public static void SetVisibility(List<Button> buttons, bool value)
+        {
+            foreach (var elem in buttons)
+                elem.Visible = value;
+        }
         public class ControlWriter : TextWriter
         {
             private Control textbox;
+
+
             public ControlWriter(Control textbox)
             {
                 this.textbox = textbox;
