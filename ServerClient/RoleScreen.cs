@@ -13,55 +13,47 @@ namespace ServerClient
 {
     public partial class RoleScreen : Form
     {
+        private List<AdminApplication> _elements;
         public RoleScreen(List<AdminApplication> elements, string title)
         {
             InitializeComponent();
             Text = $"Admin Panel - {title}";
-
+            _elements = elements;
             userBox.Items.AddRange(elements.ToArray());
-            //userBox.CheckOnClick = true;
+            userBox.CheckOnClick = true;
         }
 
         private void acceptButton_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to decline selected applications?", "Warning",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
+            foreach (AdminApplication elem in _elements)
             {
-                foreach (Application item in userBox.CheckedItems)
+                foreach (AdminApplication item in userBox.SelectedItems)
                 {
-                    await SendToStreamAsync(_client.GetStream(), item.AsAcceptMessage());
+                    if (item.UserId == elem.UserId)
+                    {
+                        _elements.Remove(new AdminApplication { UserId = item.UserId});
+                    }
                 }
-
-                MessageBox.Show("Applications have been successfully accepted. This window will close now.", "Success");
             }
-            else
-            {
-                MessageBox.Show("No changes were made. This window will close now.", "Info");
-            }
-
+            userBox.Items.Clear();
+            userBox.Items.AddRange(_elements.ToArray());
         }
 
         private void rejectButton_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to decline selected applications?", "Warning",
-                MessageBoxButtons.YesNo);
-
-            if (result == DialogResult.Yes)
+            foreach (AdminApplication elem in _elements)
             {
-                foreach (Application item in applicationListBox.CheckedItems)
+                foreach (AdminApplication item in userBox.SelectedItems)
                 {
-                    await SendToStreamAsync(_client.GetStream(), item.AsDeclineMessage());
+                    if (item.UserId == elem.UserId)
+                    {
+                        _elements.Remove(new AdminApplication { UserId = item.UserId });
+                        elem.IsRejected = true;
+                    }
                 }
-
-                MessageBox.Show("Applications have been successfully declined. This window will close now.", "Success");
             }
-            else
-            {
-                MessageBox.Show("No changes were made. This window will close now.", "Info");
-            }
-
+            userBox.Items.Clear();
+            userBox.Items.AddRange(_elements.ToArray());
         }
     }
 }
