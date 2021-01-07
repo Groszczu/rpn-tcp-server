@@ -39,7 +39,7 @@ namespace Client
             if (Cursor.Current == Cursors.WaitCursor) return;
             Cursor.Current = Cursors.WaitCursor;
 
-            if (await IsProcedureSuccessful(AuthProcedure.Login, usernameTextBox.Text, passwordTextBox.Text))
+            if (await IsProcedureSuccessful(AuthProcedure.Register, usernameTextBox.Text, passwordTextBox.Text))
             {
                 MessageBox.Show("An account has been created, you will be logged in.", "Success");
                 SwitchToMainScreen();

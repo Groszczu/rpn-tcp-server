@@ -62,7 +62,7 @@ namespace RPN_Database.Repository
             }
             catch (Exception)
             {
-
+    
             }
         }
     }
