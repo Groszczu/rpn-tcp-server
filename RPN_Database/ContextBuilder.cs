@@ -81,6 +81,16 @@ namespace RPN_Database
                     $@"INSERT INTO Users (Username, Password, Created) VALUES ('user', '{EnhancedHashPassword("user")}', CURRENT_TIMESTAMP);";
 
                 cmd.ExecuteNonQuery();
+
+                cmd.CommandText =
+                    $@"INSERT INTO Users (Username, Password, Created) VALUES ('user1', '{EnhancedHashPassword("user1")}', CURRENT_TIMESTAMP);";
+
+                cmd.ExecuteNonQuery();
+
+                cmd.CommandText =
+                    $@"INSERT INTO Users (Username, Password, Created) VALUES ('user2', '{EnhancedHashPassword("user2")}', CURRENT_TIMESTAMP);";
+
+                cmd.ExecuteNonQuery();
             }
 
             return new RpnContext();
