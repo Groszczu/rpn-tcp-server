@@ -16,9 +16,11 @@ namespace RPN_TcpServer
 {
     public class ResponseServerAsync : ResponseServer<double>
     {
-        private readonly UserRepository _userRepository;
-        private readonly HistoryRepository _historyRepository;
-        private readonly ReportRepository _reportRepository;
+        public UserRepository UserRepository { get; }
+        public HistoryRepository HistoryRepository { get; }
+        public ReportRepository ReportRepository { get; }
+
+        public ApplicationRepository ApplicationRepository { get; }
 
         /// <summary>
         /// Konstruktor klasy asynchronicznego serwera kalkulacji RPN.
@@ -28,16 +30,20 @@ namespace RPN_TcpServer
         /// <param name="transformer">Funkcja przeprowadzająca obliczenia RPN.</param>
         /// <param name="responseEncoding">Enkodowanie wykorzystywane do przeprowadzania komunikacji.</param>
         /// <param name="createContext">Funkcja tworząca kontekst bazy danych kalkulatora RPN.</param>
-        public ResponseServerAsync(IPAddress localAddress,
+        public ResponseServerAsync(
+            IPAddress localAddress,
             int port,
             ResponseTransformer<double> transformer,
             Encoding responseEncoding,
-            ContextCreator<RpnContext> createContext) : base(localAddress, port, transformer, responseEncoding)
+            ContextCreator<RpnContext> createContext,
+            Action<string> logger = null)
+            : base(localAddress, port, transformer, responseEncoding, logger)
         {
             var context = createContext();
-            _userRepository = new UserRepository(context);
-            _historyRepository = new HistoryRepository(context);
-            _reportRepository = new ReportRepository(context);
+            UserRepository = new UserRepository(context);
+            HistoryRepository = new HistoryRepository(context);
+            ReportRepository = new ReportRepository(context);
+            ApplicationRepository = new ApplicationRepository(context);
         }
 
         public override async Task Start()
@@ -47,9 +53,9 @@ namespace RPN_TcpServer
             while (true)
             {
                 var tcpClient = await _server.AcceptTcpClientAsync();
-                _logger("Client connected");
+                _logger("[Server] Client connected");
 
-                var task = ServeClient(tcpClient).ContinueWith(result => { _logger("Client disconnected"); });
+                var task = ServeClient(tcpClient).ContinueWith(result => { _logger("[Server] Client disconnected"); });
 
                 if (task.IsFaulted)
                 {
@@ -63,7 +69,7 @@ namespace RPN_TcpServer
             var stream = client.GetStream();
             var streamReader = new StreamReader(stream);
 
-            await Send(stream, new[] {"You are connected", "Please authenticate"});
+            await Send(stream, new[] { "You are connected", "Please authenticate" });
             var authInput = await streamReader.ReadLineAsync();
 
             string authOperationType, username, password, newPassword = string.Empty;
@@ -97,7 +103,7 @@ namespace RPN_TcpServer
                 case CoreLocale.Register:
                     try
                     {
-                        currentUser = await _userRepository.Register(username, password);
+                        currentUser = await UserRepository.Register(username, password);
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -109,7 +115,7 @@ namespace RPN_TcpServer
                 case CoreLocale.Login:
                     try
                     {
-                        currentUser = _userRepository.Login(username, password);
+                        currentUser = UserRepository.Login(username, password);
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -121,8 +127,9 @@ namespace RPN_TcpServer
                 case CoreLocale.ChangePassword:
                     try
                     {
-                        currentUser = await _userRepository.ChangePassword(username, password, newPassword);
+                        currentUser = await UserRepository.ChangePassword(username, password, newPassword);
                         await Send(stream, $"Password for user {username} has been changed");
+                        _logger($"[Server] Password for user {username} has been changed");
                         break;
                     }
                     catch (InvalidOperationException e)
@@ -133,10 +140,15 @@ namespace RPN_TcpServer
                     }
                 default:
                     await Send(stream, "Invalid authentication message format");
+                    _logger("[Server] Invalid authentication message format");
 
                     CloseStreams(streamReader);
                     return;
             }
+
+            _logger(UserRepository.IsAdmin(currentUser)
+                ? "[Server] Admin logged in client application"
+                : "[Server] Normal user logged in client application");
 
             while (true)
             {
@@ -146,27 +158,31 @@ namespace RPN_TcpServer
                     await Send(stream,
                         new[]
                         {
-                            "Enter RPN expression", "'history' to check last inputs", "'exit' to disconnect",
-                            "'report <message>' to report a problem"
+                            "Enter RPN expression",
+                            $"'{CoreLocale.History}' to check last inputs",
+                            $"'{CoreLocale.Exit}' to disconnect",
+                            $"'{CoreLocale.Report} <message>' to report a problem",
+                            $"'{CoreLocale.RequestAdmin}' to create an admin application for current user"
                         });
+
                     input = await streamReader.ReadLineAsync();
                 }
                 catch (Exception)
                 {
-                    _userRepository.Logout(currentUser);
+                    UserRepository.Logout(currentUser);
                     CloseStreams(streamReader);
                     break;
                 }
 
                 if (input == CoreLocale.History)
                 {
-                    if (currentUser.Username == "admin")
+                    if (UserRepository.IsAdmin(currentUser))
                     {
-                        await Send(stream, _historyRepository.All);
+                        await Send(stream, HistoryRepository.All);
                     }
                     else
                     {
-                        await Send(stream, _historyRepository.ById(currentUser.Id));
+                        await Send(stream, HistoryRepository.ById(currentUser.Id));
                     }
                 }
                 else if (Regex.IsMatch(input, RegularExpression.Report))
@@ -174,18 +190,59 @@ namespace RPN_TcpServer
                     var match = Regex.Match(input, RegularExpression.ReportWithGroup);
                     var message = match.Groups[RegularExpression.ReportGroup].Value;
 
-                    await _reportRepository.Add(currentUser, message);
+                    await ReportRepository.Add(currentUser, message);
                 }
                 else if (input == CoreLocale.GetReports)
                 {
-                    if (currentUser.Username == "admin")
+                    if (UserRepository.IsAdmin(currentUser))
                     {
-                        await Send(stream, _reportRepository.All);
+                        await Send(stream, ReportRepository.All);
                     }
                     else
                     {
                         await Send(stream, "Not authorized");
                     }
+                }
+                else if (input == CoreLocale.GetApplications)
+                {
+                    if (UserRepository.IsAdmin(currentUser))
+                    {
+                        await Send(stream, ApplicationRepository.Unresolved());
+                    }
+                    else
+                    {
+                        await Send(stream, "Not authorized");
+                    }
+                }
+                else if (input == CoreLocale.RequestAdmin)
+                {
+                    if (UserRepository.IsAdmin(currentUser))
+                    {
+                        await Send(stream, CoreLocale.IsAdmin);
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var application = await ApplicationRepository.CreateNewApplication(currentUser);
+                            await Send(stream,
+                                $"Your request has been submitted on {application.Created} - request id: {application.Id}");
+
+                            _logger($"[Server] User with id {currentUser.Id} opened an admin application");
+                        }
+                        catch (Exception) // DB UNIQUE CONSTRAINT
+                        {
+                            await Send(stream,
+                                "Couldn't create an application, you may already have a request waiting for approval or you've been rejected as an admin.");
+                        }
+                    }
+                }
+                else if (Regex.IsMatch(input, RegularExpression.ResolveApplication))
+                {
+                    var match = Regex.Match(input, RegularExpression.ResolveApplication);
+                    var id = int.Parse(match.Groups[2].Value);
+
+                    ApplicationRepository.UpdateRejection(id, match.Groups[1].Value == "decline");
                 }
                 else if (input == CoreLocale.Exit)
                 {
@@ -197,18 +254,19 @@ namespace RPN_TcpServer
                     {
                         var result = _transformer(input).ToString();
 
-                        await _historyRepository.Add(currentUser, input, result);
+                        await HistoryRepository.Add(currentUser, input, result);
 
                         await Send(stream, result);
                     }
                     catch (Exception e)
                     {
                         await Send(stream, $"Calculation error: {e.Message}");
+                        _logger($"[Alert] Calculation error: {e.Message}");
                     }
                 }
             }
 
-            _userRepository.Logout(currentUser);
+            UserRepository.Logout(currentUser);
             CloseStreams(streamReader);
         }
 
@@ -230,10 +288,16 @@ namespace RPN_TcpServer
 
         private void CloseStreams(StreamReader reader)
         {
-            var stream = reader.BaseStream;
+            try
+            {
+                var stream = reader.BaseStream;
 
-            reader.Close();
-            stream.Close();
+                reader.Close();
+                stream.Close();
+            }catch(NullReferenceException)
+            {
+                _logger($"[Alert] Client disconnected with error!");
+            }
         }
     }
 }

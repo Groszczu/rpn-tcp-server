@@ -12,5 +12,7 @@ namespace Client
             Text = $"RPN Calculator - {title}";
             listBox.Items.AddRange(elements.ToArray());
         }
+
+        private void listBox_SelectedIndexChanged() { }
     }
 }

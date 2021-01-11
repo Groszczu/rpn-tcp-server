@@ -11,7 +11,7 @@ namespace RPN_Database.Repository
             _context = rpnContext;
         }
 
-        protected Task SaveChanges()
+        protected Task SaveChangesAsync()
         {
             return _context.SaveChangesAsync();
         }

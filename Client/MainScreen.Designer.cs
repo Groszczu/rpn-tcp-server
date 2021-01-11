@@ -38,7 +38,9 @@
             this.equalityLabel = new System.Windows.Forms.Label();
             this.logOutButton = new System.Windows.Forms.Button();
             this.historyButton = new System.Windows.Forms.Button();
-            this.reportViewButton = new System.Windows.Forms.Button();
+            this.requestAdminButton = new System.Windows.Forms.Button();
+            this.bugReportsButton = new System.Windows.Forms.Button();
+            this.adminRequestApprovalButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rpnTextBox
@@ -57,7 +59,7 @@
             this.rpnLabel.AutoSize = true;
             this.rpnLabel.Location = new System.Drawing.Point(29, 36);
             this.rpnLabel.Name = "rpnLabel";
-            this.rpnLabel.Size = new System.Drawing.Size(298, 19);
+            this.rpnLabel.Size = new System.Drawing.Size(250, 20);
             this.rpnLabel.TabIndex = 1;
             this.rpnLabel.Text = "Enter RPN expression to calculate";
             // 
@@ -84,7 +86,7 @@
             this.reportLabel.AutoSize = true;
             this.reportLabel.Location = new System.Drawing.Point(402, 132);
             this.reportLabel.Name = "reportLabel";
-            this.reportLabel.Size = new System.Drawing.Size(120, 19);
+            this.reportLabel.Size = new System.Drawing.Size(102, 20);
             this.reportLabel.TabIndex = 4;
             this.reportLabel.Text = "Report a bug";
             // 
@@ -111,7 +113,7 @@
             this.equalityLabel.AutoSize = true;
             this.equalityLabel.Location = new System.Drawing.Point(531, 62);
             this.equalityLabel.Name = "equalityLabel";
-            this.equalityLabel.Size = new System.Drawing.Size(22, 19);
+            this.equalityLabel.Size = new System.Drawing.Size(18, 20);
             this.equalityLabel.TabIndex = 7;
             this.equalityLabel.Text = "=";
             // 
@@ -135,23 +137,44 @@
             this.historyButton.UseVisualStyleBackColor = true;
             this.historyButton.Click += new System.EventHandler(this.historyButton_Click);
             // 
-            // reportViewButton
+            // requestAdminButton
             // 
-            this.reportViewButton.Location = new System.Drawing.Point(33, 203);
-            this.reportViewButton.Name = "reportViewButton";
-            this.reportViewButton.Size = new System.Drawing.Size(333, 43);
-            this.reportViewButton.TabIndex = 10;
-            this.reportViewButton.Text = "View bug reports";
-            this.reportViewButton.UseVisualStyleBackColor = true;
-            this.reportViewButton.Visible = false;
-            this.reportViewButton.Click += new System.EventHandler(this.reportViewButton_Click);
+            this.requestAdminButton.Location = new System.Drawing.Point(33, 203);
+            this.requestAdminButton.Name = "requestAdminButton";
+            this.requestAdminButton.Size = new System.Drawing.Size(333, 43);
+            this.requestAdminButton.TabIndex = 10;
+            this.requestAdminButton.Text = "Request admin priviledges";
+            this.requestAdminButton.UseVisualStyleBackColor = true;
+            this.requestAdminButton.Click += new System.EventHandler(this.requestAdminButton_Click);
+            // 
+            // bugReportsButton
+            // 
+            this.bugReportsButton.Location = new System.Drawing.Point(33, 252);
+            this.bugReportsButton.Name = "bugReportsButton";
+            this.bugReportsButton.Size = new System.Drawing.Size(333, 43);
+            this.bugReportsButton.TabIndex = 11;
+            this.bugReportsButton.Text = "Show bug reports";
+            this.bugReportsButton.UseVisualStyleBackColor = true;
+            this.bugReportsButton.Click += new System.EventHandler(this.bugReportsButton_Click);
+            // 
+            // adminRequestApprovalButton
+            // 
+            this.adminRequestApprovalButton.Location = new System.Drawing.Point(33, 301);
+            this.adminRequestApprovalButton.Name = "adminRequestApprovalButton";
+            this.adminRequestApprovalButton.Size = new System.Drawing.Size(333, 43);
+            this.adminRequestApprovalButton.TabIndex = 12;
+            this.adminRequestApprovalButton.Text = "Show pending admin applications";
+            this.adminRequestApprovalButton.UseVisualStyleBackColor = true;
+            this.adminRequestApprovalButton.Click += new System.EventHandler(this.adminRequestApprovalButton_Click);
             // 
             // MainScreen
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 19F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(863, 453);
-            this.Controls.Add(this.reportViewButton);
+            this.Controls.Add(this.adminRequestApprovalButton);
+            this.Controls.Add(this.bugReportsButton);
+            this.Controls.Add(this.requestAdminButton);
             this.Controls.Add(this.historyButton);
             this.Controls.Add(this.logOutButton);
             this.Controls.Add(this.equalityLabel);
@@ -163,7 +186,7 @@
             this.Controls.Add(this.rpnLabel);
             this.Controls.Add(this.rpnTextBox);
             this.Cursor = System.Windows.Forms.Cursors.Default;
-            this.Font = new System.Drawing.Font("DejaVu Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(6, 4, 6, 4);
             this.MaximizeBox = false;
@@ -171,8 +194,12 @@
             this.Text = "RPN Calculator - Logged in as";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+
+        private System.Windows.Forms.Button adminRequestApprovalButton;
+        private System.Windows.Forms.Button bugReportsButton;
+
+        private System.Windows.Forms.Button requestAdminButton;
 
         #endregion
 
@@ -186,6 +213,5 @@
         private System.Windows.Forms.Label equalityLabel;
         private System.Windows.Forms.Button logOutButton;
         private System.Windows.Forms.Button historyButton;
-        private System.Windows.Forms.Button reportViewButton;
     }
 }

@@ -11,11 +11,14 @@ namespace RPN_Database
     /// </summary>
     public class RpnContext : DbContext
     {
-        public RpnContext() : base("name=RPNContext") { }
+        public RpnContext() : base("name=RPNContext")
+        {
+        }
 
         public DbSet<History> History { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Report> Reports { get; set; }
 
+        public DbSet<AdminApplication> Applications { get; set; }
     }
 }

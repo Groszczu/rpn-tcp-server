@@ -44,7 +44,7 @@ namespace Client.Utility
         }
 
         /// <summary>
-        /// Wysyła wiadomość do strumienia.
+        /// Wysyła wiadomość do strumienia asynchronicznie.
         /// </summary>
         /// <param name="stream">Strumień.</param>
         /// <param name="message">Wiadomość do wysłania.</param>
@@ -58,6 +58,23 @@ namespace Client.Utility
             var messageLine = $"{message}\r\n";
 
             return stream.WriteAsync(encoding.GetBytes(messageLine), 0, messageLine.Length);
+        }
+        
+        /// <summary>
+        /// Wysyła wiadomość do strumienia.
+        /// </summary>
+        /// <param name="stream">Strumień.</param>
+        /// <param name="message">Wiadomość do wysłania.</param>
+        /// <param name="encoding" default="UTF8">Wykorzystywane enkodowanie.</param>
+        /// 
+        /// <returns>Zadanie wysyłające wiadomość do strumienia.</returns>
+        public static void SendToStream(NetworkStream stream, string message, Encoding encoding = null)
+        {
+            encoding = encoding ?? Encoding.UTF8;
+
+            var messageLine = $"{message}\r\n";
+
+            stream.Write(encoding.GetBytes(messageLine), 0, messageLine.Length);
         }
 
         /// <summary>

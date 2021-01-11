@@ -23,18 +23,18 @@ namespace RPN_Database.Repository
 
         public async Task<History> Add(User user, string expresion, string result)
         {
-            var newHistroyEntry = new History()
+            var newHistory = new History
             {
                 Expression = expresion,
                 Result = result,
                 User = user,
             };
 
-            History.Add(newHistroyEntry);
+            History.Add(newHistory);
 
-            await SaveChanges();
+            await SaveChangesAsync();
 
-            return newHistroyEntry;
+            return newHistory;
         }
     }
 }

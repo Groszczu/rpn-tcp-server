@@ -8,7 +8,7 @@ namespace RPN_Database.Repository
 {
     public class ReportRepository : ContextBasedRepository
     {
-        private DbSet<Report> Reports => _context.Reports;
+        public DbSet<Report> Reports => _context.Reports;
 
         public IEnumerable<Report> All => Reports.ToList();
 
@@ -26,7 +26,7 @@ namespace RPN_Database.Repository
 
             Reports.Add(newReport);
 
-            await SaveChanges();
+            await SaveChangesAsync();
 
             return newReport;
         }
