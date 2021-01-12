@@ -55,19 +55,19 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 * Change password
 
 <p align="center">
-  <img src="/media/SequenceChpwd.png" width=500>
+  <img src="/media/SequenceChpwd.png">
 </p>
 
 * Assigning admin role in client application
 
 <p align="center">
-  <img src="/media/SequenceAdmin.png" width=500>
+  <img src="/media/SequenceAdmin.png">
 </p>
 
 #### Deployment diagram
 
 <p align="center">
-  <img src="/media/DiagramWdrozenia.png" width=500>
+  <img src="/media/DiagramWdrozenia.png">
 </p>
 
 #### Class diagram
