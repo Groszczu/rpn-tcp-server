@@ -50,6 +50,26 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
   <img src="/media/ActivityReviewReports.png" width=500>
 </p>
 
+#### Sequence diagrams
+
+* Change password
+
+<p align="center">
+  <img src="/media/SequenceChpwd.png" width=500>
+</p>
+
+* Assigning admin role in client application
+
+<p align="center">
+  <img src="/media/SequenceAdmin.png" width=500>
+</p>
+
+#### Deployment diagram
+
+<p align="center">
+  <img src="/media/DiagramWdrozenia.png" width=500>
+</p>
+
 #### Class diagram
 
 <p align="center">
