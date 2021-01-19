@@ -107,11 +107,11 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 </p>
 
 #### The most interesting code snippets
-##Client Application
+## Client Application
 
-##Administration panel
+## Administration panel
 
-##Server RPN
+## Server RPN
 
 
 
