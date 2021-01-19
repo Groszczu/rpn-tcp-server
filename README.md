@@ -166,7 +166,53 @@ public static async Task HandleAuthenticationProcedure(NetworkStream stream,
 * Server GUI Client
 
 ```csharp
+private async void startButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SetVisibility(_buttons, true);
+                startButton.Visible = false;
+                IPAddress ipAddress = null;
+                var port = 0;
 
+                if (ipBox.TextLength.Equals(0) && portBox.TextLength.Equals(0))
+                {
+                    ipAddress = IPAddress.Loopback;
+                    port = 1024;
+                }
+                else
+                {
+                    ipAddress = IPAddress.Parse(ipBox.Text);
+                    port = int.Parse(portBox.Text);
+                }
+
+                if (ipAddress == null || port == 0)
+                {
+                    Console.WriteLine("Please enter following arguments: 1. IP address, 2. port");
+                    return;
+                }
+
+                Console.WriteLine(ipAddress.ToString());
+
+                var contextBuilder = new ContextBuilder(_ctrlWriter.Write);
+
+                _rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII,
+                    contextBuilder.CreateRpnContext, _ctrlWriter.Write);
+
+                if (!isRunned)
+                {
+                    _rpnServer.Start();
+                    isRunned = true;
+                }
+                else
+                    _ctrlWriter.Write("[Alert] Server is started!");
+            }
+            catch (Exception)
+            {
+                _ctrlWriter.Write("[Alert] Start server to use implemented options");
+            }
+        }
+   }
 ```
 
 * Server
