@@ -106,13 +106,72 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
   <img src="/media/screen7.png">
 </p>
 
-### The most interesting code snippets
-#### Client Application
+#### Selected code fragments
 
-#### Administration panel
+* Client - function handling user authentication
 
-#### Server RPN
+```csharp
+public static async Task HandleAuthenticationProcedure(NetworkStream stream,
+            AuthProcedure authProcedure,
+            string username,
+            string password,
+            string newPassword = null)
+        {
+            var streamReader = new StreamReader(stream);
 
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                throw new ArgumentNullException("fields cannot be blank");
 
+            _ = await streamReader.ReadLineAsync(); //You are connected
+            _ = await streamReader.ReadLineAsync(); //Please authenticate
 
+            string procedure = string.Empty, request = null;
+
+            switch (authProcedure)
+            {
+                case AuthProcedure.Login:
+                    procedure = CoreLocale.Login;
+                    break;
+                case AuthProcedure.Register:
+                    procedure = CoreLocale.Register;
+                    break;
+                case AuthProcedure.ChangePassword:
+                    procedure = CoreLocale.ChangePassword;
+                    request = $"{procedure} {username} {password} {newPassword}";
+                    break;
+            }
+
+            await SendToStreamAsync(stream, request ?? $"{procedure} {username} {password}");
+
+            var message = await streamReader.ReadLineAsync(); //Enter RPN Expression / Error
+
+            switch (message)
+            {
+                case CoreLocale.UserLoggedIn:
+                    throw new DuplicateNameException(message);
+                case CoreLocale.UsernameTaken:
+                    throw new DuplicateNameException(message);
+                case CoreLocale.NoSuchUsername:
+                    throw new InvalidCredentialException(message);
+                case CoreLocale.InvalidPassword:
+                    throw new InvalidCredentialException(message);
+            }
+
+            _ = await streamReader.ReadLineAsync(); //'history' to check last inputs
+            _ = await streamReader.ReadLineAsync(); //'exit' to disconnect
+            _ = await streamReader.ReadLineAsync(); //'report <message>' to report a problem
+        }
+```
+
+* Server GUI Client
+
+```csharp
+
+```
+
+* Server
+
+```csharp
+
+```
 > 2020 @ PUT
