@@ -206,11 +206,10 @@ private async void startButton_Click(object sender, EventArgs e)
            }
            else
                _ctrlWriter.Write("[Alert] Server is started!");
-           }
-           catch (Exception)
-           {
+      }
+      catch (Exception)
+      {
               _ctrlWriter.Write("[Alert] Start server to use implemented options");
-           }
       }
 }
 ```
