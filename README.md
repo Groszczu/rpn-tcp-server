@@ -175,19 +175,15 @@ private async void startButton_Click(object sender, EventArgs e)
            IPAddress ipAddress = null;
            var port = 0;
 
-           if (ipBox.TextLength.Equals(0) && portBox.TextLength.Equals(0))
-           {
+           if (ipBox.TextLength.Equals(0) && portBox.TextLength.Equals(0)){     
                 ipAddress = IPAddress.Loopback;
                 port = 1024;
-           }
-           else
-           {
+           }else{
                 ipAddress = IPAddress.Parse(ipBox.Text);
                 port = int.Parse(portBox.Text);
            }
 
-           if (ipAddress == null || port == 0)
-           {
+           if (ipAddress == null || port == 0){
                 Console.WriteLine("Please enter following arguments: 1. IP address, 2. port");
                 return;
            }
@@ -199,12 +195,10 @@ private async void startButton_Click(object sender, EventArgs e)
            _rpnServer = new ResponseServerAsync(ipAddress, port, RPNCalculator.GetResult, Encoding.ASCII,
            contextBuilder.CreateRpnContext, _ctrlWriter.Write);
 
-           if (!isRunned)
-           {
+           if (!isRunned){
                _rpnServer.Start();
                isRunned = true;
-           }
-           else
+           }else
                _ctrlWriter.Write("[Alert] Server is started!");
       }
       catch (Exception)
