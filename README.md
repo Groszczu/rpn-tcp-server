@@ -106,5 +106,13 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
   <img src="/media/screen7.png">
 </p>
 
+#### The most interesting code snippets
+##Client Application
+
+##Administration panel
+
+##Server RPN
+
+
 
 > 2020 @ PUT
