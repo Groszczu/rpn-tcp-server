@@ -211,6 +211,20 @@ private async void startButton_Click(object sender, EventArgs e)
 * Server
 
 ```csharp
+private Task Send(NetworkStream stream, IEnumerable<object> models)
+{
+        return Send(stream, models.Select(m => m.ToString()));
+}
 
+private Task Send(NetworkStream stream, IEnumerable<string> lines)
+{
+        return Send(stream, string.Join("\r\n", lines));
+}
+
+private Task Send(NetworkStream stream, string message)
+{
+        var messageLine = $"{message}\r\n";
+        return stream.WriteAsync(_encoding.GetBytes(messageLine), 0, messageLine.Length);
+}
 ```
 > 2020 @ PUT
