@@ -17,9 +17,10 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 Product Owner: Bartosz Kosmala
 Scrum Team:
 * Development Team:
-** Roch Goszczyński
-** Bartosz Kosmala
-** Hubert Knioła
+- Roch Goszczyński
+- Bartosz Kosmala
+- Hubert Knioła
+
 Scrum Master: Roch Goszczyński
 
 #### User Story
