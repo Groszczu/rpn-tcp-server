@@ -25,13 +25,10 @@ Scrum Master: Roch Goszczyński
 
 #### Sprint Planning
 
-Data: 19.01.2021
-
-Czas trwania: 30m
-
-Przewidywany czas ukończenia sprintu: 19.01.2021
-
-Sprint Review: 19.01.2021
+* Data: 19.01.2021
+* Czas trwania: 30m
+* Przewidywany czas ukończenia sprintu: 19.01.2021
+* Sprint Review: 19.01.2021
 
 #### User Story
 
