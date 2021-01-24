@@ -12,6 +12,58 @@ Tcp server and client application that allow the users to:
 
 Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 
+#### Team
+
+Product Owner: Bartosz Kosmala
+Scrum Team:
+* Development Team:
+** Roch Goszczyński
+** Bartosz Kosmala
+** Hubert Knioła
+Scrum Master: Roch Goszczyński
+
+#### User Story
+
+Funkcjonalność wymagana przez klienta:
+* historia obliczeń użytkownika,
+* możliwość zgłaszania błędów,
+* obsługę użytkowników - login oraz hasło,
+* rola użytkownika i administratora
+* rozszerzenie puli możliwych operacji matematycznych,
+* interfejs użytkownika,
+* aplikacja okienkowa serwera,
+* możliwość zmiany hasła przez użytkownika.
+
+#### Introduction
+
+Serwer RPN służy do obliczania wyników wyrażeń zapisanych w odwrotnej notacji polskiej (reverse Polish notation, RPN) i przesłania ich do klientów TCP. Dodatkowo umożliwia klientowi możliwość inicjacji zakończenia połączenia oraz wyświetlenia historii wpisanych przez niego wyrażeń wraz w wynikami.
+Przesłane wyrażenia mogą składać się z liczb, które można przekształcić do typu double lub znaków ( + - * / ^ % root log). Pomiędzy każdym znakiem lub liczbą  powinien znajdować się pojedynczy znak spacji.
+
+#### Functional requirements
+
+* Administrator uruchamia serwer. Istnieje możliwość podania adresu IP oraz portu, na którym serwer ma nasłuchiwać na połączenia. W przypadku braku podania argumentów wartości te zostają ustawione na domyślne.
+* Serwer łączy się z bazą danych.
+* Serwer autoryzuje użytkowników.
+* Serwer rozpoczyna pracę natychmiast po uruchomieniu aplikacji.
+* Administrator kończy działanie serwera.
+* Klient informuje administratora o błędzie, który napotkał.
+* Klient tworzy konto użytkownika.
+* Klient zmienia hasło dla wybranego konta
+* Klient loguję się do systemu.
+* Klient przesyła wiadomości zawierające wyrażenia zapisane w RPN lub nazwy operacji specjalnych, na które serwer odpowiada odpowiednim wynikiem operacji lub przerwaniem połączenia.
+
+#### Non-functional requirements
+
+* Aplikacja serwera jest aplikacją konsolową działającą na systemie Windows.
+* Język programowania: C#.
+* Komunikacja pomiędzy serwerem a klientem odbywa się wykorzystując protokół TCP.
+* Historia operacji matematycznych klienta jest przechowywana w bazie danych.
+* W przypadku błędnych operacji klient otrzymuje odpowiednią informację. Informacje o wewnętrznym błędzie serwera nie są przesyłane do klienta.
+* Serwer może obsługiwać wiele połączeń jednorazowo.
+* Serwer oraz klient posiadają interfejs graficzny.
+* Funkcjonalność serwera może być w łatwy sposób rozszerzona.
+* Rozłączenie jednego klienta nie powoduje rozłączenia pozostałych, sesje są od siebie niezależne.
+
 #### Use case diagram
 
 <p align="center">
