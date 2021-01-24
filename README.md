@@ -15,13 +15,18 @@ Written with `.NET Framework 4.7.2`, using a `SQLite` database.
 #### Team
 
 Product Owner: Bartosz Kosmala
-Scrum Team:
-* Development Team:
+Development Team:
 - Roch Goszczyński
 - Bartosz Kosmala
 - Hubert Knioła
 
 Scrum Master: Roch Goszczyński
+
+#### Sprint Planning
+Data: 19.01.2021
+Czas trwania: 30m
+Przewidywany czas ukończenia sprintu: 19.01.2021
+Sprint Review: 19.01.2021
 
 #### User Story
 
