@@ -20,5 +20,6 @@ namespace RPN_Locale
         public const string NoSuchUsername = "User with given username doesn't exist";
         public const string RequestAdmin = "request admin priviledges";
         public const string IsAdmin = "Current user already has admin priviledges";
+        public const string NoUser = "Username and password for user do not match";
     }
 }

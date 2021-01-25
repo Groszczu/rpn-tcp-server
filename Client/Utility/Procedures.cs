@@ -70,6 +70,8 @@ namespace Client.Utility
                     throw new InvalidCredentialException(message);
                 case CoreLocale.InvalidPassword:
                     throw new InvalidCredentialException(message);
+                case CoreLocale.NoUser:
+                    throw new InvalidCredentialException(message);
             }
 
             _ = await streamReader.ReadLineAsync(); //'history' to check last inputs

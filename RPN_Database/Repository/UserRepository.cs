@@ -77,7 +77,7 @@ namespace RPN_Database.Repository
             }
             catch
             {
-                throw new InvalidOperationException("User does not exist");
+                throw new InvalidOperationException(CoreLocale.NoUser);
             }
         }
 

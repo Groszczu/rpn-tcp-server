@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace RPN_Database.Repository
 
         public async Task<AdminApplication> CreateNewApplication(User user)
         {
+            if (Applications.FirstOrDefault(a => a.UserId == user.Id) != null)
+            {
+                throw new DuplicateNameException("an application already exists");
+            }
+            
             var entity = new AdminApplication
             {
                 User = user,
