@@ -24,7 +24,7 @@ namespace Client
 
             Text = $"RPN Calculator - Logged in as \"{username}\"";
 
-            _isUserAdmin = (ProcessAdminRequest(_client.GetStream()) == CoreLocale.IsAdmin);
+            _isUserAdmin = (ProcessAdminRequest(_client.GetStream(), true) == CoreLocale.IsAdmin);
             requestAdminButton.Visible = !_isUserAdmin;
             adminRequestApprovalButton.Visible = bugReportsButton.Visible = _isUserAdmin;
         }

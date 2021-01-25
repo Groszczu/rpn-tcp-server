@@ -38,7 +38,7 @@ namespace RPN_Database.Repository
                 .Include(a => a.User)
                 .ToList();
 
-            return applications.Select(a => $"{a.Id},{a.User.Username},{a.Created}");
+            return applications.Select(a => $"{a.Id},{a.User.Username},{a.Created}").ToList();
         }
 
         public IEnumerable<AdminApplication> UnresolvedAsObject()
@@ -53,17 +53,10 @@ namespace RPN_Database.Repository
 
         public async void UpdateRejection(int id, bool? value)
         {
-            try
-            {
-                var application = await Applications.FindAsync(id);
-                if (application != null) application.IsRejected = value;
+            var application = await Applications.FindAsync(id);
+            if (application != null) application.IsRejected = value;
 
-                await SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-    
-            }
+            await SaveChangesAsync();
         }
     }
 }

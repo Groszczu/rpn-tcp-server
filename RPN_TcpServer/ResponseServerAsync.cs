@@ -214,6 +214,17 @@ namespace RPN_TcpServer
                         await Send(stream, "Not authorized");
                     }
                 }
+                else if (input == CoreLocale.CheckAdmin)
+                {
+                    if (UserRepository.IsAdmin(currentUser))
+                    {
+                        await Send(stream, CoreLocale.IsAdmin);
+                    }
+                    else
+                    {
+                        await Send(stream, CoreLocale.NotAdmin);
+                    }
+                }
                 else if (input == CoreLocale.RequestAdmin)
                 {
                     if (UserRepository.IsAdmin(currentUser))
@@ -230,7 +241,7 @@ namespace RPN_TcpServer
 
                             _logger($"[Server] User with id {currentUser.Id} opened an admin application");
                         }
-                        catch (Exception) // DB UNIQUE CONSTRAINT
+                        catch (Exception e) // DB UNIQUE CONSTRAINT
                         {
                             await Send(stream,
                                 "Couldn't create an application, you may already have a request waiting for approval or you've been rejected as an admin.");

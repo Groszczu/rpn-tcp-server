@@ -1,7 +1,11 @@
-﻿namespace RPN_Locale
+﻿using System.Collections.Generic;
+
+namespace RPN_Locale
 {
     public static class CoreLocale
     {
+        public const string NotAdmin = "Current user is not an admin";
+        public const string CheckAdmin = "check admin";
         public const string Login = "login";
         public const string Register = "register";
         public const string ChangePassword = "chpwd";

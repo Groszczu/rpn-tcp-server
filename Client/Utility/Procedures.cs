@@ -191,12 +191,13 @@ namespace Client.Utility
         /// Przeprowadza proces zgłoszenia aplikacji o uprawnienia administratora.
         /// </summary>
         /// <param name="stream">Strumień.</param>
+        /// <param name="checkOnly">Zażądaj wyłącznie sprawdzenia uprawnień.</param>
         /// <returns></returns>
-        public static string ProcessAdminRequest(NetworkStream stream)
+        public static string ProcessAdminRequest(NetworkStream stream, bool checkOnly = false)
         {
             var streamReader = new StreamReader(stream);
 
-            SendToStream(stream, CoreLocale.RequestAdmin);
+            SendToStream(stream, checkOnly ? CoreLocale.CheckAdmin : CoreLocale.RequestAdmin);
 
             var message = streamReader.ReadLine();
 
